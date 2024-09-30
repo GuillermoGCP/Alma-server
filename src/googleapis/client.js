@@ -1,17 +1,18 @@
 import { google } from 'googleapis'
-import fs from 'fs'
-import path from 'path'
-import { generateError } from '../utils/index.js'
+// import fs from 'fs'
+// import path from 'path'
+// import { generateError } from '../utils/index.js'
 
-const credentialsPath = path.join(process.cwd(), 'credentials.json')
+// const credentialsPath = path.join(process.cwd(), 'credentials.json')
 
-let credentials
-try {
-    credentials = JSON.parse(fs.readFileSync(credentialsPath, 'utf8'))
-} catch (error) {
-    generateError('Error leyendo credenciales', error.message)
-}
+// let credentials
+// try {
+//     credentials = JSON.parse(fs.readFileSync(credentialsPath, 'utf8'))
+// } catch (error) {
+//     generateError('Error leyendo credenciales', error.message)
+// }
 
+const credentials = JSON.parse(process.env.CREDENTIALS)
 const auth = new google.auth.GoogleAuth({
     credentials,
     scopes: [
