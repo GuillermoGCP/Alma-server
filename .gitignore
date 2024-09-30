@@ -1,0 +1,14 @@
+# Ignorar el archivo .env
+.env
+
+# Ignorar la carpeta node_modules
+node_modules/
+
+# Ignorar el archivo credentials.json
+credentials.json
+
+# Ignorar el contenido de esas carpetas, pero no las carpetas mismas (dentro han de tener un archivo .gitkeep)
+src/assets/forms/*
+src/assets/images/*
+src/assets/instagramPosts/*
+!src/assets/images/.gitkeep
