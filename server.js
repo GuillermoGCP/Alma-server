@@ -23,7 +23,7 @@ app.use(express.json()) //Para manejar application/json en las solicitudes.
 app.use(express.urlencoded({ extended: true })) //Para manejar application/x-www-form-urlencoded en las solicitudes.
 app.use(
     cors({
-        origin: 'https://deploy-test-b06qlicqf-guillermos-projects-18990947.vercel.app',
+        origin: true,
         credentials: true, // Esto permite que las cookies y credenciales se envíen
     })
 )
