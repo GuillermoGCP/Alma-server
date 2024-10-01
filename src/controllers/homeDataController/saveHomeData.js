@@ -1,68 +1,77 @@
 import fs from 'fs/promises'
 import path from 'path'
+import HomeModel from '../../Database/models/HomeModel.js'
 
 const homeData = async (req, res, next) => {
     try {
-        //Accedo al json almacenado y lo parseo:
-        const filePath = path.join('src', 'assets', 'homeData', `home.json`)
-        const data = await fs.readFile(filePath, 'utf8')
-        const oldJsonData = JSON.parse(data)
+        let savedData
+        let newJsonData
+
+        //Extraigo los datos antiguos de la base de datos Mongo:
+        const existingData = await HomeModel.findOne()
 
         //Manejo las referencias de las imágenes nuevas (si las hay) y las antiguas:
-        let imageHome = oldJsonData.home.imageHome || 'sin imagen'
-        let logo = oldJsonData.generalSettings.logo || 'sin imagen'
+        let imageHome = existingData.home.imageHome || 'sin imagen'
+        let logo = existingData.generalSettings.logo || 'sin imagen'
         if (req.files) {
             if (req.files['imageHome'])
                 imageHome = req.files['imageHome'][0].filename
             if (req.files['logo']) logo = req.files['logo'][0].filename
         }
 
-        //Creo el objeto combinado:
-        const newJsonData = {
-            home: {
-                ...(oldJsonData.home || {}),
-                ...req.body.home,
-                imageHome: imageHome,
-            },
-            generalSettings: {
-                ...(oldJsonData.generalSettings || {}),
-                ...req.body.generalSettings,
-                logo: logo,
-            },
-            library: {
-                ...oldJsonData.library,
-                ...req.body.library,
-            },
+        if (existingData) {
+            //Creo el objeto combinado:
+            newJsonData = {
+                home: {
+                    ...existingData.home,
+                    ...(req.body.home || {}),
+                    imageHome: imageHome,
+                },
+                generalSettings: {
+                    ...existingData.generalSettings,
+                    ...(req.body.generalSettings || {}),
+                    logo: logo,
+                },
+                library: {
+                    ...existingData.library,
+                    ...(req.body.library || {}),
+                },
+            }
+
+            // Actualizar el documento existente en Mongo:
+            await HomeModel.updateOne({ _id: existingData._id }, newJsonData)
+        } else {
+            // Si no, guardo un nuevo documento
+            savedData = await dataToSend.save(newJsonData)
         }
 
-        //Actualizo los datos en el json:
-        await fs.writeFile(filePath, JSON.stringify(newJsonData, null, 2))
-
-        //Borro las imágenes físicas si las nuevas son diferentes a las antiguas:
+        // //Borro las imágenes físicas si las nuevas son diferentes a las antiguas:
         if (req.files) {
             if (
                 req.files['imageHome'] &&
-                oldJsonData.home.imageHome !== 'sin imagen' &&
-                req.files['imageHome'] !== oldJsonData.home.imageHome
+                existingData.home.imageHome &&
+                existingData.home.imageHome !== 'sin imagen' &&
+                req.files['imageHome'] !== existingData.home.imageHome
             ) {
                 const imageHomePath = path.join(
                     'src',
                     'assets',
                     'images',
-                    oldJsonData.home.imageHome
+                    existingData.home.imageHome
                 )
                 await fs.unlink(imageHomePath)
             }
             if (
                 req.files['logo'] &&
-                oldJsonData.generalSettings.logo !== 'sin imagen' &&
-                req.files['logo'] !== oldJsonData.generalSettings.logo
+                existingData.generalSettings.logo &&
+                existingData.generalSettings.logo !== 'sin imagen' &&
+                req.files['logo'] !== existingData.generalSettings.logo
             ) {
                 const imageLogoPath = path.join(
                     'src',
                     'assets',
                     'images',
-                    oldJsonData.generalSettings.logo
+                    existingData.generalSettings.logo
                 )
                 await fs.unlink(imageLogoPath)
             }
@@ -70,7 +79,7 @@ const homeData = async (req, res, next) => {
 
         res.send({
             message: 'Datos de "Home", guardados correctamente',
-            data: newJsonData,
+            data: { ...newJsonData, id: existingData._id.toString() },
         })
     } catch (error) {
         console.log(error)

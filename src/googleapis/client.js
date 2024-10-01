@@ -1,4 +1,6 @@
 import { google } from 'googleapis'
+import dotenv from 'dotenv/config'
+import { generateError } from '../utils/index.js'
 // import fs from 'fs'
 // import path from 'path'
 // import { generateError } from '../utils/index.js'
@@ -11,8 +13,27 @@ import { google } from 'googleapis'
 // } catch (error) {
 //     generateError('Error leyendo credenciales', error.message)
 // }
-
-const credentials = JSON.parse(process.env.CREDENTIALS)
+let credentials
+let data
+let private_key
+try {
+    if (process.env.CREDENTIALS) {
+        data = JSON.parse(process.env.CREDENTIALS)
+        private_key = data.private_key.toString().replace(/\\\\n/g, '\n')
+        private_key = private_key.replace(/\\n/g, '\n')
+        credentials = { ...data, private_key: private_key }
+        console.log(
+            'Credenciales leidas desde variables de entorno.',
+            credentials
+        )
+    } else {
+        throw new Error(
+            'No se encontraron credenciales en la variable de entorno.'
+        )
+    }
+} catch (error) {
+    generateError('Error al leer las credenciales', error.message)
+}
 const auth = new google.auth.GoogleAuth({
     credentials,
     scopes: [

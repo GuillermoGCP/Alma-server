@@ -1,6 +1,7 @@
 import express from 'express'
 import dotenv from 'dotenv/config'
 import { join } from 'path'
+import conectDb from './src/Database/config.js'
 import cors from 'cors'
 import { sessionMiddleware } from './src/middlewares/index.js'
 import {
@@ -16,8 +17,11 @@ import {
 } from './src/routes/index.js'
 import { notFound, manageError } from './src/middlewares/index.js'
 
+//Crear instancia de Express:
 const app = express()
 
+//Connectar a Mongo:
+conectDb()
 //Middlewares de aplicación:
 app.use(express.json()) //Para manejar application/json en las solicitudes.
 app.use(express.urlencoded({ extended: true })) //Para manejar application/x-www-form-urlencoded en las solicitudes.
