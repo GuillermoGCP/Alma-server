@@ -22,6 +22,7 @@ const app = express()
 
 //Connectar a Mongo:
 conectDb()
+
 //Middlewares de aplicación:
 app.use(express.json()) //Para manejar application/json en las solicitudes.
 app.use(express.urlencoded({ extended: true })) //Para manejar application/x-www-form-urlencoded en las solicitudes.

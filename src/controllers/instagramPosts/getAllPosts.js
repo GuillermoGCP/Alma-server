@@ -1,32 +1,22 @@
-import fs from 'fs/promises'
-import path from 'path'
+import InstagramPostModel from '../../Database/models/InstagramPostModel.js'
 
 const getAllPosts = async (_req, res, next) => {
-    //Utilizo el mapeo del Array.from para meter ya los archivos:
-    const instagramPostList = Array.from({ length: 6 }, (_, index) => {
-        const filePath = path.join(
-            'src',
-            'assets',
-            'instagramPosts',
-            `post${index + 1}.json`
-        )
-        //Puedo guardar las promesas del fs sin necesidad del await:
-        return fs
-            .readFile(filePath, 'utf8')
-            .then((post) => JSON.parse(post))
-            .catch((error) => {
-                console.error(`Error al leer el archivo ${filePath}:`, error)
-                return {}
-            })
-    })
-
     try {
-        //Resuelvo las promesas:
-        const allPosts = await Promise.all(instagramPostList)
-
+        //Guardo las publicaciones en el index del array correspondiente a su postNumber + 1:
+        const instagramPostList = Promise.all(
+            Array.from({ length: 6 }, async (_, index) => {
+                const post = await InstagramPostModel.findOne({
+                    postNumber: index + 1,
+                })
+                if (post) {
+                    return { code: post.code }
+                } else return {}
+            })
+        )
+        const dataToSend = await instagramPostList
         res.send({
             message: 'Publicaciones de Instagram, obtenidas',
-            posts: allPosts,
+            posts: dataToSend,
         })
     } catch (error) {
         next(error)

@@ -1,18 +1,25 @@
-import fs from 'fs/promises'
-import path from 'path'
+import FilteredExperiencesModel from '../../Database/models/FilteredExperiencesModel.js'
 import { getRowsData } from '../../googleapis/methods/index.js'
 
 const saveFilteredExperiences = async (req, res, next) => {
     const spreadsheetId = process.env.SPREADSHEET_ID
+    let FilteredExperiences
+
     try {
-        //Guardo los index de las experiencias en un json.
-        const filePath = path.join(
-            'src',
-            'controllers',
-            'experiences',
-            `filteredExperiences.json`
-        )
-        await fs.writeFile(filePath, JSON.stringify(req.body, null, 2), 'utf8')
+        //Traigo los datos antiguos:
+        FilteredExperiences = await FilteredExperiencesModel.findOne()
+
+        if (FilteredExperiences) {
+            // Actualizar el documento existente en Mongo:
+            await FilteredExperiencesModel.updateOne(
+                { _id: FilteredExperiences._id },
+                req.body
+            )
+        } else {
+            //Crear datos nuevos:
+            FilteredExperiences = new FilteredExperiencesModel(req.body)
+            await FilteredExperiences.save()
+        }
 
         //Las obtengo de las hojas de cálculo para enviarlas al front:
         const experiencesToSend = Promise.all(

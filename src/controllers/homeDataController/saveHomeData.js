@@ -42,7 +42,23 @@ const homeData = async (req, res, next) => {
             await HomeModel.updateOne({ _id: existingData._id }, newJsonData)
         } else {
             // Si no, guardo un nuevo documento
-            savedData = await dataToSend.save(newJsonData)
+            newJsonData = {
+                home: {
+                    ...(req.body.home || {}),
+                    imageHome: imageHome,
+                },
+                generalSettings: {
+                    ...(req.body.generalSettings || {}),
+                    logo: logo,
+                },
+                library: {
+                    ...(req.body.library || {}),
+                },
+            }
+
+            // Crear un nuevo documento en la base de datos:
+            savedData = new HomeModel(newJsonData)
+            await savedData.save()
         }
 
         // //Borro las imágenes físicas si las nuevas son diferentes a las antiguas:

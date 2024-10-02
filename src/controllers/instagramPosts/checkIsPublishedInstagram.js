@@ -1,26 +1,14 @@
-import fs from 'fs/promises'
-import path from 'path'
 import { generateError } from '../../utils/index.js'
+import InstagramPostModel from '../../Database/models/InstagramPostModel.js'
 
 const checkIsPublishedInstagram = async (req, res, next) => {
     let isPublished
     let jsonData
+    const postNumber = req.params.postNumber
     try {
-        const postNumber = req.params.postNumber
-        const filePath = path.join(
-            'src',
-            'assets',
-            'instagramPosts',
-            `post${postNumber}.json`
-        )
-        const data = await fs.readFile(filePath, 'utf8')
-
-        try {
-            jsonData = JSON.parse(data)
-        } catch (err) {
-            generateError(`Error al parsear el JSON: ${err.message}`)
-        }
-
+        jsonData = await InstagramPostModel.findOne({
+            postNumber: postNumber,
+        })
         if (jsonData && jsonData.code) {
             console.log('El Post está publicado')
             isPublished = true
