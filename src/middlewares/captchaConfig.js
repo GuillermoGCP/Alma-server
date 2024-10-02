@@ -1,10 +1,8 @@
 import session from 'express-session'
-import connectRedis from 'connect-redis'
 import redisClient from '../../redisClient.js'
 import RedisStore from 'connect-redis'
 
 const sessionMiddleware = session({
-    // store: sessionStore, //Se podría configurar otras formas de almacenamiento, con bases de datos o Redis.
     store: new RedisStore({ client: redisClient }),
     secret: process.env.SESSION_SECRET,
     resave: false,

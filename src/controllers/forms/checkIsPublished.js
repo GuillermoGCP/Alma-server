@@ -1,5 +1,4 @@
-import fs from 'fs/promises'
-import path from 'path'
+import Form from '../../Database/models/FormModel.js'
 
 const checkIsPublished = async (req, res, next) => {
     try {
@@ -9,17 +8,11 @@ const checkIsPublished = async (req, res, next) => {
         let jsonData
         let isPublished
 
-        const filePath = path.join(
-            'src',
-            'assets',
-            'forms',
-            `formPublished${jsonNumber}.json`
-        )
-        const data = await fs.readFile(filePath, 'utf8')
+        jsonData = await Form.findOne({
+            publishNumber: jsonNumber,
+        })
 
         if (!checkIsFile) {
-            jsonData = JSON.parse(data)
-
             if (jsonData && jsonData.formId === formId) {
                 console.log('El formId coincide.')
                 isPublished = true
@@ -28,7 +21,6 @@ const checkIsPublished = async (req, res, next) => {
                 isPublished = false
             }
         } else {
-            jsonData = JSON.parse(data)
             if (Object.keys(jsonData).length === 0) isPublished = false
             else isPublished = true
         }

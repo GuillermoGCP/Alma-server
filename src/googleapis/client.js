@@ -22,10 +22,6 @@ try {
         private_key = data.private_key.toString().replace(/\\\\n/g, '\n')
         private_key = private_key.replace(/\\n/g, '\n')
         credentials = { ...data, private_key: private_key }
-        console.log(
-            'Credenciales leidas desde variables de entorno.',
-            credentials
-        )
     } else {
         throw new Error(
             'No se encontraron credenciales en la variable de entorno.'

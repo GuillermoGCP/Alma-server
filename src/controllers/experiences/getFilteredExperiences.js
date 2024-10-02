@@ -1,21 +1,16 @@
 import fs from 'fs/promises'
 import path from 'path'
+import FilteredExperiencesModel from '../../Database/models/FilteredExperiencesModel.js'
 import { getRowsData } from '../../googleapis/methods/index.js'
 
 const getFilteredExperiences = async (req, res, next) => {
     const spreadsheetId = process.env.SPREADSHEET_ID
     try {
-        const filePath = path.join(
-            'src',
-            'controllers',
-            'experiences',
-            `filteredExperiences.json`
-        )
-        const experiencesIndex = await fs.readFile(filePath, req.body, 'utf8')
-        const parsedExperiencesIndex = JSON.parse(experiencesIndex)
+        const filteredExperiencesFromDb =
+            await FilteredExperiencesModel.findOne()
 
         const experiencesToSend = Promise.all(
-            parsedExperiencesIndex.filteredExperiences.map(
+            filteredExperiencesFromDb.filteredExperiences.map(
                 async (experienceId) => {
                     const fields = {
                         field: 'id',

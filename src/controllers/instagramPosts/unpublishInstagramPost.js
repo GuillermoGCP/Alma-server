@@ -1,18 +1,9 @@
-import fs from 'fs/promises'
-import path from 'path'
+import InstagramPostModel from '../../Database/models/InstagramPostModel.js'
 
 const unpublishInstagramPost = async (req, res, next) => {
     try {
         const postNumber = req.params.postNumber
-
-        const filePath = path.join(
-            'src',
-            'assets',
-            'instagramPosts',
-            `post${postNumber}.json`
-        )
-
-        await fs.writeFile(filePath, JSON.stringify({}, null, 2), 'utf8')
+        InstagramPostModel.deleteOne({ postNumber: postNumber })
 
         res.send({ message: 'El post de Instagram ha sido despublicado' })
     } catch (error) {

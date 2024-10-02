@@ -1,20 +1,13 @@
-import fs from 'fs/promises'
-import path from 'path'
+import Form from '../../Database/models/FormModel.js'
 
 const unpublishForm = async (req, res, next) => {
     try {
         const jsonNumber = req.params.jsonNumber.toString()
+        await Form.deleteOne({
+            publishNumber: jsonNumber,
+        })
 
-        const filePath = path.join(
-            'src',
-            'assets',
-            'forms',
-            `formPublished${jsonNumber}.json`
-        )
-
-        await fs.writeFile(filePath, JSON.stringify({}, null, 2), 'utf8')
-
-        console.log('El archivo JSON ha sido vaciado.')
+        console.log('El formulario ha sido despublicado.')
 
         res.send({ message: 'Formulario despublicado', form: {} })
     } catch (error) {

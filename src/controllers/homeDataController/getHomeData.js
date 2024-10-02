@@ -1,14 +1,11 @@
-import fs from 'fs/promises'
-import path from 'path'
+import HomeModel from '../../Database/models/HomeModel.js'
 
-const getHomeData = async (req, res, next) => {
+const getHomeData = async (_req, res, next) => {
     try {
-        const filePath = path.join('src', 'assets', 'homeData', `home.json`)
-        const data = await fs.readFile(filePath, 'utf8')
-        const jsonData = JSON.parse(data)
+        const dataFromDb = await HomeModel.findOne()
         res.send({
             message: 'Datos de "Home", obtenidos',
-            form: jsonData,
+            form: dataFromDb,
         })
     } catch (error) {
         next(error)

@@ -1,17 +1,14 @@
-import fs from 'fs/promises'
-import path from 'path'
+import InstagramPostModel from '../../Database/models/InstagramPostModel.js'
 
 const saveInstagramPost = async (req, res, next) => {
     try {
         const postNumber = req.params.postNumber
-        const filePath = path.join(
-            'src',
-            'assets',
-            'instagramPosts',
-            `post${postNumber}.json`
-        )
-        await fs.writeFile(filePath, JSON.stringify(req.body, null, 2))
+        const InstagramPost = new InstagramPostModel({
+            ...req.body,
+            postNumber: postNumber,
+        })
 
+        await InstagramPost.save()
         res.send({
             message: 'Publicación de Instagram, guardada',
             post: req.body,

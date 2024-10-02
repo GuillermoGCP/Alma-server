@@ -1,20 +1,32 @@
-import fs from 'fs/promises'
-import path from 'path'
+import FormModel from '../../Database/models/FormModel.js'
 
 const getPublishedForm = async (req, res, next) => {
     try {
         const jsonNumber = req.params.jsonNumber
-        const filePath = path.join(
-            'src',
-            'assets',
-            'forms',
-            `formPublished${jsonNumber}.json`
-        )
-        const data = await fs.readFile(filePath, 'utf8')
-        const jsonData = JSON.parse(data)
-        res.send({ message: 'Formulario publicado obtenido', form: jsonData })
+
+        if (!jsonNumber) {
+            return res.status(400).send({
+                message: 'El número de publicación es obligatorio.',
+            })
+        }
+
+        const formFromData = await FormModel.findOne({
+            publishNumber: jsonNumber,
+        })
+
+        if (!formFromData) {
+            console.log(
+                'Formulario no encontrado para el número de publicación dado.'
+            )
+        }
+
+        res.send({
+            message: 'Formulario publicado obtenido',
+            form: formFromData,
+        })
     } catch (error) {
         next(error)
     }
 }
+
 export default getPublishedForm
