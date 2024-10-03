@@ -10,6 +10,8 @@ const storage = multer.diskStorage({
     },
 })
 
+// TODO const storage = multer.memoryStorage(); // Guardar los datos en buffer
+
 const fileFilter = (req, file, callback) => {
     const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif']
     if (allowedMimeTypes.includes(file.mimetype)) {
