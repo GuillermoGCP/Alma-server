@@ -11,7 +11,7 @@ const saveFilteredExperiences = async (req, res, next) => {
 
         if (FilteredExperiences) {
             // Actualizar el documento existente en Mongo:
-            await FilteredExperiencesModel.updateOne(
+            await FilteredExperiencesModel.replaceOne(
                 { _id: FilteredExperiences._id },
                 req.body
             )

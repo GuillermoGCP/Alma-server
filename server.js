@@ -20,18 +20,37 @@ import { notFound, manageError } from './src/middlewares/index.js'
 //Crear instancia de Express:
 const app = express()
 
+const whitelist = [
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'https://alma-web-one.vercel.app',
+]
+
+const corsOptions = {
+    origin: function (origin, callback) {
+        if (whitelist.indexOf(origin) !== -1 || !origin) {
+            callback(null, true)
+        } else {
+            callback(new Error('Not allowed by CORS'))
+        }
+    },
+    credentials: true,
+}
+
+app.use(cors(corsOptions))
+
 //Connectar a Mongo:
 conectDb()
 
 //Middlewares de aplicación:
 app.use(express.json()) //Para manejar application/json en las solicitudes.
 app.use(express.urlencoded({ extended: true })) //Para manejar application/x-www-form-urlencoded en las solicitudes.
-app.use(
-    cors({
-        origin: true,
-        credentials: true, // Esto permite que las cookies y credenciales se envíen
-    })
-)
+// app.use(
+//     cors({
+//         origin: true,
+//         credentials: true, // Esto permite que las cookies y credenciales se envíen
+//     })
+// )
 app.use(sessionMiddleware)
 
 // Middleware para servir archivos estáticos desde la carpeta "assets/images". La ruta será: "Dirección del back"/images:

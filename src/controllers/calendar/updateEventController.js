@@ -59,7 +59,7 @@ const updateEventController = async (req, res, next) => {
                 },
             },
         }
-        console.log('merged', mergedEvent)
+
         //Lo actualizo:
         const response = await updateEvent(eventId, mergedEvent)
 
