@@ -20,6 +20,7 @@ import { notFound, manageError } from './src/middlewares/index.js'
 //Crear instancia de Express:
 const app = express()
 
+//Direcciones permitidas:
 const whitelist = [
     'http://localhost:5173',
     'http://localhost:5174',
