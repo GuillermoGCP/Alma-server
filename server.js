@@ -26,6 +26,7 @@ const whitelist = [
     'http://localhost:5174',
     'https://alma-web-one.vercel.app',
     'https://alma-lactancia-web.vercel.app',
+    'https://alma-lactancia-web3.vercel.app',
 ]
 
 const corsOptions = {
