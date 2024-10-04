@@ -21,9 +21,7 @@ let private_key
 // }
 
 try {
-    if (process.env.CREDENTIALS) {
-        data = JSON.parse(process.env.CREDENTIALS)
-
+    if (process.env.GCP_CLIENT_EMAIL) {
         private_key = [
             process.env.PRIVATE_KEY_PART_1,
             process.env.PRIVATE_KEY_PART_2,
@@ -55,7 +53,19 @@ try {
             process.env.PRIVATE_KEY_PART_28,
         ].join('\n')
 
-        credentials = { ...data, private_key: private_key }
+        credentials = {
+            type: process.env.GCP_TYPE,
+            project_id: process.env.GCP_PROJECT_ID,
+            private_key_id: process.env.GCP_PRIVATE_KEY_ID,
+            client_email: process.env.GCP_CLIENT_EMAIL,
+            client_id: process.env.GCP_CLIENT_ID,
+            auth_uri: process.env.GCP_AUTH_URI,
+            token_uri: process.env.GCP_TOKEN_URI,
+            auth_provider_x509_cert_url: process.env.GCP_AUTH_PROVIDER_CERT_URL,
+            client_x509_cert_url: process.env.GCP_CLIENT_CERT_URL,
+            universe_domain: process.env.GCP_UNIVERSE_DOMAIN,
+            private_key,
+        }
     } else {
         throw new Error(
             'No se encontraron credenciales en la variable de entorno.'
