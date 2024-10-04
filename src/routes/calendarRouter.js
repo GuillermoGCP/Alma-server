@@ -14,7 +14,7 @@ router.delete(
     deleteEventController
 )
 router.patch('/update-calendar-event/:eventId', updateEventController)
-router.get('/list-calendar-events', listEventsController)
+router.post('/list-calendar-events', listEventsController)
 router.get('/cancel-calendar-event/:eventId', cancelEvent)
 router.get('/get-calendar-event/:eventId', getEventController)
 
