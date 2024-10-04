@@ -11,57 +11,60 @@ const newCollaborator = async (req, res, next) => {
 
         const { name, surname, description, role, team } = req.body
 
-        const collaboratorImage = req.file?.filename || 'sin imagen'
-
-        // const collaboratorImage = req.file || 'sin imagen' //? Conseguir todos los datos + que nombre
-        console.log('IMAGEN DEL COLABORADOR', req.file);
-
-        cloudinaryUpload(req.file)
+        // Subir la foto a cloudinary y guardar el url        
+        const response = await cloudinaryUpload(req.file.path, 'collaborators');        
+        const collaboratorImageUrl = response.secure_url || 'Sin imagen'
+        const { public_id } = response
         
-        // const id = uuidv4()
-        // const dataToInsert = [
-        //     [id, name, surname, description, role, collaboratorImage],
-        // ]
+        const id = uuidv4()
+        const dataToInsert = [
+            [id, name, surname, description, role, collaboratorImageUrl],
+        ]
 
-        // // Validación de datos:
-        // const { error } = validationSchemaNewCollaborator.validate(req.body)
+        // console.log(public_id);
+        console.log(response);
+        
+        
 
-        // if (error) {
-        //     error.message = error.details[0].message
-        //     generateError(error.message)
-        // }
+        // Validación de datos:
+        const { error } = validationSchemaNewCollaborator.validate(req.body)
 
-        // if (team !== 'true') {
-        //     const values = await allSheetData(sheetId, 'Colaboradores')
+        if (error) {
+            error.message = error.details[0].message
+            generateError(error.message)
+        }
 
-        //     const { nextEmptyRow } = values
+        if (team !== 'true') {
+            const values = await allSheetData(sheetId, 'Colaboradores')
 
-        //     const collaboratorAdded = await insertRow(
-        //         sheetId,
-        //         'Colaboradores',
-        //         nextEmptyRow,
-        //         dataToInsert
-        //     )
-        //     res.send({
-        //         message: 'Colaborador añadido correctamente',
-        //         collaboratorAdded,
-        //     })
-        // } else {
-        //     const values = await allSheetData(sheetId, 'Miembros')
+            const { nextEmptyRow } = values
 
-        //     const { nextEmptyRow } = values
+            const collaboratorAdded = await insertRow(
+                sheetId,
+                'Colaboradores',
+                nextEmptyRow,
+                dataToInsert
+            )
+            res.send({
+                message: 'Colaborador añadido correctamente',
+                collaboratorAdded,
+            })
+        } else {
+            const values = await allSheetData(sheetId, 'Miembros')
 
-        //     const collaboratorAdded = await insertRow(
-        //         sheetId,
-        //         'Miembros',
-        //         nextEmptyRow,
-        //         dataToInsert
-        //     )
+            const { nextEmptyRow } = values
+
+            const collaboratorAdded = await insertRow(
+                sheetId,
+                'Miembros',
+                nextEmptyRow,
+                dataToInsert
+            )
             res.send({
                 message: 'Miembro del equipo añadido correctamente',
-                // collaboratorAdded,
+                collaboratorAdded,
             })
-        // }
+        }
     } catch (error) {
         next(error.message)
     }

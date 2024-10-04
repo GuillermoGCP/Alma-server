@@ -30,6 +30,6 @@ const testCloudinaryConnection = async () => {
 };
 
 //! Solo 500 conexiones al mes, usar con cuidado
-testCloudinaryConnection(); // Probar la conexión
+// testCloudinaryConnection(); // Probar la conexión
 
 export default cloudinaryV2;
