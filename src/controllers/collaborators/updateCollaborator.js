@@ -24,7 +24,7 @@ const updateCollaborator = async (req, res, next) => {
         if (req.file) {
             try {
                 const response = await cloudinaryUpdate(req.file.path, prevImage, 'collaborators')
-                newImage = response;
+                newImage = response.url;
                 
             } catch (error) {
                 console.error(
