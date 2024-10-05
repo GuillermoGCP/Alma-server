@@ -3,19 +3,14 @@ import dotenv from 'dotenv'
 
 dotenv.config();
 
-const { CLOUDINARY_NAME, CLOUDINARY_KEY, CLOUDINARY_SECRET, CLOUDINARY_URL } = process.env
+const { CLOUDINARY_URL } = process.env
 
 cloudinaryV2.config({
-    // cloud_name: CLOUDINARY_NAME,
-    // api_key: CLOUDINARY_KEY,
-    // api_secret: CLOUDINARY_SECRET,
     cloudinary_url: CLOUDINARY_URL
-
 });
 
 setTimeout(() => {
     console.log('Cloudinary configurado correctamente');
-    console.log(CLOUDINARY_KEY, CLOUDINARY_NAME, CLOUDINARY_SECRET);
 }, 1000); // Que no se muestre al principio del log
 
 const testCloudinaryConnection = async () => {

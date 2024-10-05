@@ -1,7 +1,7 @@
 import cloudinaryV2 from "../../utils/cloudinaryConfig.js";
 import extractFileInfo from "./extractId.js";
 
-const cloudinaryDelete = async (secure_url, directory) => {
+const cloudinaryDelete = async (secure_url) => {
     try {
         // Extraer id del url
         const public_id = extractFileInfo(secure_url)

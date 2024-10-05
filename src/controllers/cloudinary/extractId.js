@@ -1,4 +1,4 @@
-function extractFileInfo(url) {
+function extractFileInfo(url) {    
     // Obtener el pathname y dividirlo en partes
     const pathParts = new URL(url).pathname.split('/');
     

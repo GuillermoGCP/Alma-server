@@ -28,7 +28,6 @@ const deleteCollaborator = async (req, res, next) => {
             // Borrar foto de cloudinary
             if (image && image !== 'Sin imagen') {
                 const result = await cloudinaryDelete(image, 'collaborators');
-                if (result.result !== 'ok') return next(new Error('Error al eliminar la imagen de Cloudinary'));
             }
 
             // Eliminar colaborador de google sheets
@@ -49,7 +48,6 @@ const deleteCollaborator = async (req, res, next) => {
             // Borrar foto de cloudinary            
             if (image && image !== 'Sin imagen') {
                 const result = await cloudinaryDelete(image);
-                if (result.result !== 'ok') return next(new Error('Error al eliminar la imagen de Cloudinary'));
             }
             
             // Eliminar miembro de google sheets

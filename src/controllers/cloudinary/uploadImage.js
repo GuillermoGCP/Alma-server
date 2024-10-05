@@ -12,7 +12,7 @@ const cloudinaryUpload = async (file, directory)  => {
         // return result;
         
         return {
-           url: result.secure_url, //!
+           url: result.secure_url,
            publicId: result.public_id,
             originalFilename: result.original_filename,
         };

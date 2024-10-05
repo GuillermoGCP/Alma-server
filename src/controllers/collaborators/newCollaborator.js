@@ -11,20 +11,22 @@ const newCollaborator = async (req, res, next) => {
 
         const { name, surname, description, role, team } = req.body
 
-        // Subir la foto a cloudinary y guardar el url        
-        const response = await cloudinaryUpload(req.file.path, 'collaborators');        
-        const collaboratorImageUrl = response.secure_url || 'Sin imagen'
-        const { public_id } = response
+        // Subir la foto a cloudinary y guardar el url  
+        let collaboratorImageUrl = "Sin imagen";
+        
+        if (req.file?.path && req.file?.path !== 'Sin imagen') {
+            const response = await cloudinaryUpload(req.file.path, 'collaborators');        
+            collaboratorImageUrl = response.url || 'Sin imagen'
+            console.log(response);
+        }
+
+        console.log('HAY URL EN BACK?',collaboratorImageUrl);
+        
         
         const id = uuidv4()
         const dataToInsert = [
             [id, name, surname, description, role, collaboratorImageUrl],
-        ]
-
-        // console.log(public_id);
-        console.log(response);
-        
-        
+        ];        
 
         // Validación de datos:
         const { error } = validationSchemaNewCollaborator.validate(req.body)
