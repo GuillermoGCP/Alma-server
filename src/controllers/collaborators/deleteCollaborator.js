@@ -6,10 +6,7 @@ const deleteCollaborator = async (req, res, next) => {
         const sheetId = process.env.SPREADSHEET_ID
 
         const image = req.query.image
-        const { id, team } = req.params
-
-        console.log(image);
-        
+        const { id, team } = req.params        
 
         let sheetName
         let fields
@@ -27,7 +24,7 @@ const deleteCollaborator = async (req, res, next) => {
             
             // Borrar foto de cloudinary
             if (image && image !== 'Sin imagen') {
-                const result = await cloudinaryDelete(image, 'collaborators');
+                const result = await cloudinaryDelete(image);
             }
 
             // Eliminar colaborador de google sheets

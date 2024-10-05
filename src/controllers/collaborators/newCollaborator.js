@@ -17,11 +17,7 @@ const newCollaborator = async (req, res, next) => {
         if (req.file?.path && req.file?.path !== 'Sin imagen') {
             const response = await cloudinaryUpload(req.file.path, 'collaborators');        
             collaboratorImageUrl = response.url || 'Sin imagen'
-            console.log(response);
-        }
-
-        console.log('HAY URL EN BACK?',collaboratorImageUrl);
-        
+        }        
         
         const id = uuidv4()
         const dataToInsert = [

@@ -4,6 +4,7 @@ import {
 } from '../../utils/index.js'
 import { insertRow, allSheetData } from '../../googleapis/methods/index.js'
 import { v4 as uuidv4 } from 'uuid'
+import cloudinaryUpload from '../cloudinary/uploadImage.js'
 
 const saveExperience = async (req, res, next) => {
     try {
@@ -11,9 +12,14 @@ const saveExperience = async (req, res, next) => {
         const id = uuidv4()
 
         const { text } = req.body
-        const image = req.file?.filename || 'sin imagen'
+        const image = req.file || 'sin imagen'
 
-        const dataToInsert = [[id, text, image]]
+        // Subir imagen a Cloudinary
+        const response = await cloudinaryUpload(image.path, 'experiences');
+        const imageUrl = response.url;
+
+
+        const dataToInsert = [[id, text, imageUrl]]
 
         // Validación de datos:
         const { error } = validationSchemaNewExperiences.validate(req.body)
