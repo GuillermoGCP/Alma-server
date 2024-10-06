@@ -1,13 +1,14 @@
 import { generateError } from '../../utils/index.js'
 import { validationSchemaNewCollaborator } from '../../utils/index.js'
 import { updateRow, getRowsData } from '../../googleapis/methods/index.js'
-import path from 'path'
-import fs from 'fs/promises'
+import cloudinaryUpdate from '../cloudinary/updateImage.js'
 
 const updateCollaborator = async (req, res, next) => {
     try {
         const spreadSheetId = process.env.SPREADSHEET_ID
         const { id, team } = req.params
+        const prevImage = req.query.image        
+
         let sheetName
         let oldData
         let mergedObject = {}
@@ -17,7 +18,23 @@ const updateCollaborator = async (req, res, next) => {
         let newValuesArray
         let dataToValidate
         let dataToUpdate
-
+        let newImage = ''
+        
+        //Si envías una nueva foto, se actualiza en cloudinary:
+        if (req.file) {
+            try {
+                const response = await cloudinaryUpdate(req.file.path, prevImage, 'collaborators')
+                newImage = response.url;
+                
+            } catch (error) {
+                console.error(
+                    'Error al actualizar:',
+                    error.message
+                )
+                generateError(error.message)
+            }
+        }
+        
         //Actualizar colaborador:
         if (team === 'false') {
             sheetName = 'Colaboradores'
@@ -45,7 +62,7 @@ const updateCollaborator = async (req, res, next) => {
                 ...mergedObject,
                 ...fieldsToUpdate,
                 collaboratorImage:
-                    (req.file?.filename && req.file.filename) || 'Sin imagen',
+                    newImage ? newImage : 'Sin imagen',
             }
 
             //Se preparan con el formato que necesita la API de Google:
@@ -85,7 +102,7 @@ const updateCollaborator = async (req, res, next) => {
                 ...mergedObject,
                 ...fieldsToUpdate,
                 collaboratorImage:
-                    (req.file?.filename && req.file.filename) || 'Sin imagen',
+                    newImage ? newImage : 'Sin imagen', 
             }
 
             //Se preparan con el formato que necesita la API de Google:
@@ -117,32 +134,6 @@ const updateCollaborator = async (req, res, next) => {
         if (error) {
             error.message = error.details[0].message
             generateError(error.message)
-        }
-        //Si envías una nueva foto, se borra la anterior de la carpeta uploads:
-        if (req.file) {
-            const newImagePath = path.join('src', 'uploads', req.file.filename)
-            const oldImagePath = path.join(
-                'src',
-                'uploads',
-                newData.collaboratorImage
-            )
-
-            try {
-                // Si la imagen es diferente, borra la antigua:
-                if (
-                    newImagePath &&
-                    oldImagePath &&
-                    newImagePath !== oldImagePath
-                ) {
-                    await fs.unlink(oldImagePath)
-                }
-            } catch (error) {
-                console.error(
-                    'Error al acceder o eliminar la imagen actual:',
-                    error.message
-                )
-                generateError(error.message)
-            }
         }
 
         res.send({ message: 'Datos actualizados' })

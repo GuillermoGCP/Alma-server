@@ -1,10 +1,12 @@
 import { deleteRow, getDataToDelete } from '../../googleapis/methods/index.js'
+import cloudinaryDelete from '../cloudinary/deleteImage.js'
 
 const deleteExperience = async (req, res, next) => {
     try {
         const sheetId = process.env.SPREADSHEET_ID
 
         const id = req.params.experienceId
+        const image = req.query.image
         let sheetName
         let fields
 
@@ -17,6 +19,12 @@ const deleteExperience = async (req, res, next) => {
         }
         const data = await getDataToDelete(sheetId, sheetName, fields)
         const { rowToDelete } = data
+
+        // Eliminar foto de cloudinary
+        if (image && image !== 'Sin imagen') {
+            const response = await cloudinaryDelete(image)
+        }
+        // Eliminar de google sheets
         await deleteRow(rowToDelete)
         res.send({ message: 'Experiencia eliminada' })
     } catch (error) {
