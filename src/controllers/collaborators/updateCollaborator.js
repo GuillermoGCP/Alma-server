@@ -20,7 +20,7 @@ const updateCollaborator = async (req, res, next) => {
         let dataToUpdate
         let newImage = ''
         
-        //Si envías una nueva foto, se borra la anterior de la carpeta uploads:
+        //Si envías una nueva foto, se actualiza en cloudinary:
         if (req.file) {
             try {
                 const response = await cloudinaryUpdate(req.file.path, prevImage, 'collaborators')
