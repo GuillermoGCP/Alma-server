@@ -1,6 +1,8 @@
 import fs from 'fs/promises'
 import path from 'path'
 import HomeModel from '../../Database/models/HomeModel.js'
+import cloudinaryUpdate from '../cloudinary/updateImage.js'
+import { log } from 'console'
 
 const homeData = async (req, res, next) => {
     try {
@@ -12,12 +14,20 @@ const homeData = async (req, res, next) => {
 
         //Manejo las referencias de las imágenes nuevas (si las hay) y las antiguas:
         let imageHome = existingData.home.imageHome || 'sin imagen'
-        let logo = existingData.generalSettings.logo || 'sin imagen'
+        let logo = existingData.generalSettings.logo || 'sin imagen'  
+                
         if (req.files) {
-            if (req.files['imageHome'])
-                imageHome = req.files['imageHome'][0].filename
-            if (req.files['logo']) logo = req.files['logo'][0].filename
-        }
+            if (req.files['imageHome']) {
+                // Actualizar en cloudinary                
+                const updateResponse = await cloudinaryUpdate(req.files['imageHome'][0].path, imageHome, 'misc'); // Borramos imagen actual de la nube
+                imageHome = updateResponse.url;
+            }
+            if (req.files['logo']){
+                // Actualizar en cloudinary
+                const updateResponse = await cloudinaryUpdate(req.files['logo'][0].path, logo, 'misc'); // Borramos logo actual de la nube
+                logo = updateResponse.url;                
+            }
+        } 
 
         if (existingData) {
             //Creo el objeto combinado:
@@ -59,38 +69,6 @@ const homeData = async (req, res, next) => {
             // Crear un nuevo documento en la base de datos:
             savedData = new HomeModel(newJsonData)
             await savedData.save()
-        }
-
-        // //Borro las imágenes físicas si las nuevas son diferentes a las antiguas:
-        if (req.files) {
-            if (
-                req.files['imageHome'] &&
-                existingData.home.imageHome &&
-                existingData.home.imageHome !== 'sin imagen' &&
-                req.files['imageHome'] !== existingData.home.imageHome
-            ) {
-                const imageHomePath = path.join(
-                    'src',
-                    'assets',
-                    'images',
-                    existingData.home.imageHome
-                )
-                await fs.unlink(imageHomePath)
-            }
-            if (
-                req.files['logo'] &&
-                existingData.generalSettings.logo &&
-                existingData.generalSettings.logo !== 'sin imagen' &&
-                req.files['logo'] !== existingData.generalSettings.logo
-            ) {
-                const imageLogoPath = path.join(
-                    'src',
-                    'assets',
-                    'images',
-                    existingData.generalSettings.logo
-                )
-                await fs.unlink(imageLogoPath)
-            }
         }
 
         res.send({

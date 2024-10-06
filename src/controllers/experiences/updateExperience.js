@@ -1,6 +1,4 @@
 import { getRowsData, updateRow } from '../../googleapis/methods/index.js';
-import fs from 'fs/promises';
-import path from 'path';
 import {
     generateError,
     validationUpdateExperiences,
@@ -15,9 +13,7 @@ const updateExperience = async (req, res, next) => {
 
         // Actualizar la imagen en Cloudinary:
         let newImage = 'Sin imagen';
-        if (req.file) {
-            console.log('HAY FILE EN BACK:', req.file);
-            
+        if (req.file) {            
             try {
                 const response = await cloudinaryUpdate(req.file.path, prevImage, 'experiences');
                 if (response.success) {
@@ -42,8 +38,6 @@ const updateExperience = async (req, res, next) => {
         // Correctly assign the new image URL
         const image = newImage || req.body.image || 'Sin imagen';
         const newExperience = [id, experienceFromFront.text, image];
-
-        console.log("CLOUDINARY IMAGE URL after update:", image);
         
 
         // Datos antiguos:

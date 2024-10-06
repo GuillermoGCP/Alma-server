@@ -12,6 +12,7 @@ const cloudinaryDelete = async (secure_url) => {
     } catch (error) {
         if (error.message === 'Invalid URL') {
             console.warn("Invalid url: not existing picture or wrong address")
+            return {result: 'Invalid Url'};
         } else {
             // Log de otros errores, continúa con la subida
             console.error("Error during image deletion:", deletionError);
