@@ -2,6 +2,7 @@ import express from 'express'
 import dotenv from 'dotenv/config'
 import { join } from 'path'
 import conectDb from './src/Database/config.js'
+import cloudinary from './src/utils/cloudinaryConfig.js'
 import cors from 'cors'
 import { sessionMiddleware } from './src/middlewares/index.js'
 import {
