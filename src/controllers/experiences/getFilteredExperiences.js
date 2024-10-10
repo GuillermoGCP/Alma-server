@@ -1,5 +1,3 @@
-import fs from 'fs/promises'
-import path from 'path'
 import FilteredExperiencesModel from '../../Database/models/FilteredExperiencesModel.js'
 import { getRowsData } from '../../googleapis/methods/index.js'
 
@@ -36,6 +34,7 @@ const getFilteredExperiences = async (req, res, next) => {
             )
         )
         const readyExperiencesTosend = await experiencesToSend
+        console.log('Esto que eees', experiencesToSend)
 
         res.send({
             message: `Experiencias filtradas, obtenidas`,
@@ -43,6 +42,7 @@ const getFilteredExperiences = async (req, res, next) => {
         })
     } catch (error) {
         console.log(error)
+        console.log('Llega?')
         next(error)
     }
 }

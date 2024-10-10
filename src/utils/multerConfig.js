@@ -1,16 +1,16 @@
 import multer from 'multer'
 import path from 'path'
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, './src/assets/images/')
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.originalname)
-    },
-})
+// const storage = multer.diskStorage({
+//     destination: function (req, file, cb) {
+//         cb(null, './src/assets/images/')
+//     },
+//     filename: function (req, file, cb) {
+//         cb(null, file.originalname)
+//     },
+// })
 
-// TODO const storage = multer.memoryStorage(); // Guardar los datos en buffer
+const storage = multer.memoryStorage() // Guardar los datos en buffer
 
 const fileFilter = (req, file, callback) => {
     const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif']

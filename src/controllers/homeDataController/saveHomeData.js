@@ -1,8 +1,5 @@
-import fs from 'fs/promises'
-import path from 'path'
 import HomeModel from '../../Database/models/HomeModel.js'
 import cloudinaryUpdate from '../cloudinary/updateImage.js'
-import { log } from 'console'
 
 const homeData = async (req, res, next) => {
     try {
@@ -14,20 +11,28 @@ const homeData = async (req, res, next) => {
 
         //Manejo las referencias de las imágenes nuevas (si las hay) y las antiguas:
         let imageHome = existingData.home.imageHome || 'sin imagen'
-        let logo = existingData.generalSettings.logo || 'sin imagen'  
-                
+        let logo = existingData.generalSettings.logo || 'sin imagen'
+
         if (req.files) {
             if (req.files['imageHome']) {
-                // Actualizar en cloudinary                
-                const updateResponse = await cloudinaryUpdate(req.files['imageHome'][0].path, imageHome, 'misc'); // Borramos imagen actual de la nube
-                imageHome = updateResponse.url;
-            }
-            if (req.files['logo']){
                 // Actualizar en cloudinary
-                const updateResponse = await cloudinaryUpdate(req.files['logo'][0].path, logo, 'misc'); // Borramos logo actual de la nube
-                logo = updateResponse.url;                
+                const updateResponse = await cloudinaryUpdate(
+                    req.files['imageHome'][0].path,
+                    imageHome,
+                    'misc'
+                ) // Borramos imagen actual de la nube
+                imageHome = updateResponse.url
             }
-        } 
+            if (req.files['logo']) {
+                // Actualizar en cloudinary
+                const updateResponse = await cloudinaryUpdate(
+                    req.files['logo'][0].path,
+                    logo,
+                    'misc'
+                ) // Borramos logo actual de la nube
+                logo = updateResponse.url
+            }
+        }
 
         if (existingData) {
             //Creo el objeto combinado:
