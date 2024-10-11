@@ -1,44 +1,40 @@
-import { getRowsData, updateRow } from '../../googleapis/methods/index.js';
+import { getRowsData, updateRow } from '../../googleapis/methods/index.js'
+import cloudinaryDelete from '../cloudinary/deleteImage.js'
+import cloudinaryUpload from '../cloudinary/uploadImage.js'
 import {
     generateError,
     validationUpdateExperiences,
-} from '../../utils/index.js';
-import cloudinaryUpdate from '../cloudinary/updateImage.js';
+} from '../../utils/index.js'
 
 const updateExperience = async (req, res, next) => {
     try {
-        const id = req.params.id;
-        const prevImage = req.query.image;
-        const spreadsheetId = process.env.SPREADSHEET_ID;
+        const id = req.params.id
+        const spreadsheetId = process.env.SPREADSHEET_ID
+        let image = req.file
 
-        // Actualizar la imagen en Cloudinary:
-        let newImage = 'Sin imagen';
-        if (req.file) {            
+        // Datos nuevos y validación:
+        const experienceFromFront = req.body
+        const { error } =
+            validationUpdateExperiences.validate(experienceFromFront)
+        if (error) {
+            error.message = error.details[0].message
+            generateError(error.message)
+        }
+
+        // Subir la imagen a Cloudinary:
+        if (req.file) {
             try {
-                const response = await cloudinaryUpdate(req.file.path, prevImage, 'experiences');
-                if (response.success) {
-                    newImage = response.url;
-                } else {
-                    throw new Error(response.message || "Cloudinary update failed.");
-                }
+                const response = await cloudinaryUpload(
+                    req.file,
+                    'experiencias'
+                )
+
+                image = response
             } catch (error) {
-                console.error('Error al actualizar:', error.message);
-                generateError(error.message);
+                console.error('Error al actualizar:', error.message)
+                generateError(error.message)
             }
         }
-
-        // Datos nuevos:
-        const experienceFromFront = req.body;
-        const { error } = validationUpdateExperiences.validate(experienceFromFront);
-        if (error) {
-            error.message = error.details[0].message;
-            generateError(error.message);
-        }
-
-        // Correctly assign the new image URL
-        const image = newImage || req.body.image || 'Sin imagen';
-        const newExperience = [id, experienceFromFront.text, image];
-        
 
         // Datos antiguos:
         const fields = {
@@ -46,29 +42,43 @@ const updateExperience = async (req, res, next) => {
             value: id,
             newValue: '',
             sheetName: 'Experiencias',
-        };
-        const matchingData = await getRowsData(spreadsheetId, 'Experiencias', fields);
-        const { rowData } = matchingData;
+        }
+        const matchingData = await getRowsData(
+            spreadsheetId,
+            'Experiencias',
+            fields
+        )
+        const { rowData } = matchingData
 
-        const experienceFromBack = rowData;
+        const experienceFromBack = rowData
 
         // Datos actualizados:
         const updatedExperience = [
             id,
             experienceFromFront.text || experienceFromBack[1],
             image || experienceFromBack[2],
-        ];
-        const data = await getRowsData(spreadsheetId, 'Experiencias', fields, updatedExperience);
-        const { rowToUpdate } = data;
-        await updateRow(rowToUpdate);
+        ]
+        const data = await getRowsData(
+            spreadsheetId,
+            'Experiencias',
+            fields,
+            updatedExperience
+        )
+        const { rowToUpdate } = data
+        await updateRow(rowToUpdate)
+
+        // Borrar imagen antigua si existe nueva:
+        if (req.file) cloudinaryDelete(experienceFromBack[2])
+
+        const newExperience = [id, experienceFromFront.text, image]
 
         res.status(200).json({
             message: 'Experiencia actualizada correctamente.',
             data: newExperience,
-        });
+        })
     } catch (error) {
-        console.log(error);
-        next(error);
+        console.log(error)
+        next(error)
     }
-};
-export default updateExperience;
+}
+export default updateExperience

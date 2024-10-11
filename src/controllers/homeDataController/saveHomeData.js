@@ -17,18 +17,18 @@ const homeData = async (req, res, next) => {
             if (req.files['imageHome']) {
                 // Actualizar en cloudinary
                 const updateResponse = await cloudinaryUpdate(
-                    req.files['imageHome'][0].path,
+                    { buffer: req.files['imageHome'][0].buffer },
                     imageHome,
-                    'misc'
+                    'home'
                 ) // Borramos imagen actual de la nube
                 imageHome = updateResponse.url
             }
             if (req.files['logo']) {
                 // Actualizar en cloudinary
                 const updateResponse = await cloudinaryUpdate(
-                    req.files['logo'][0].path,
+                    { buffer: req.files['logo'][0].buffer },
                     logo,
-                    'misc'
+                    'home'
                 ) // Borramos logo actual de la nube
                 logo = updateResponse.url
             }

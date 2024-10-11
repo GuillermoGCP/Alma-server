@@ -3,7 +3,6 @@ import { validationSchemaNewCollaborator } from '../../utils/index.js'
 import { insertRow, allSheetData } from '../../googleapis/methods/index.js'
 import { v4 as uuidv4 } from 'uuid'
 import cloudinaryUpload from '../cloudinary/uploadImage.js'
-import { file } from 'googleapis/build/src/apis/file/index.js'
 
 const newCollaborator = async (req, res, next) => {
     try {
@@ -11,18 +10,18 @@ const newCollaborator = async (req, res, next) => {
 
         const { name, surname, description, role, team } = req.body
 
-        // Subir la foto a cloudinary y guardar el url  
-        let collaboratorImageUrl = "Sin imagen";
-        
-        if (req.file?.path && req.file?.path !== 'Sin imagen') {
-            const response = await cloudinaryUpload(req.file.path, 'collaborators');        
-            collaboratorImageUrl = response.url || 'Sin imagen'
-        }        
-        
+        // Subir la foto a cloudinary y guardar el url
+        let collaboratorImageUrl = 'Sin imagen'
+
+        if (req.file) {
+            const response = await cloudinaryUpload(req.file, 'collaborators')
+            collaboratorImageUrl = response || 'Sin imagen'
+        }
+
         const id = uuidv4()
         const dataToInsert = [
             [id, name, surname, description, role, collaboratorImageUrl],
-        ];        
+        ]
 
         // Validación de datos:
         const { error } = validationSchemaNewCollaborator.validate(req.body)

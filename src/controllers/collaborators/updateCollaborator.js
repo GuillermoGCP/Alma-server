@@ -1,13 +1,13 @@
 import { generateError } from '../../utils/index.js'
 import { validationSchemaNewCollaborator } from '../../utils/index.js'
 import { updateRow, getRowsData } from '../../googleapis/methods/index.js'
-import cloudinaryUpdate from '../cloudinary/updateImage.js'
+import cloudinaryUpload from '../cloudinary/uploadImage.js'
+import cloudinaryDelete from '../cloudinary/deleteImage.js'
 
 const updateCollaborator = async (req, res, next) => {
     try {
         const spreadSheetId = process.env.SPREADSHEET_ID
         const { id, team } = req.params
-        const prevImage = req.query.image        
 
         let sheetName
         let oldData
@@ -19,22 +19,21 @@ const updateCollaborator = async (req, res, next) => {
         let dataToValidate
         let dataToUpdate
         let newImage = ''
-        
+
         //Si envías una nueva foto, se actualiza en cloudinary:
         if (req.file) {
             try {
-                const response = await cloudinaryUpdate(req.file.path, prevImage, 'collaborators')
-                newImage = response.url;
-                
-            } catch (error) {
-                console.error(
-                    'Error al actualizar:',
-                    error.message
+                const response = await cloudinaryUpload(
+                    req.file,
+                    'collaborators'
                 )
+                newImage = response
+            } catch (error) {
+                console.error('Error al actualizar:', error.message)
                 generateError(error.message)
             }
         }
-        
+
         //Actualizar colaborador:
         if (team === 'false') {
             sheetName = 'Colaboradores'
@@ -61,9 +60,12 @@ const updateCollaborator = async (req, res, next) => {
             newData = {
                 ...mergedObject,
                 ...fieldsToUpdate,
-                collaboratorImage:
-                    newImage ? newImage : 'Sin imagen',
+                collaboratorImage: newImage ? newImage : 'Sin imagen',
             }
+
+            //Se borra la anterior imagen de Cloudinary:
+            if (oldData.collaboratorImage !== 'Sin imagen')
+                cloudinaryDelete(oldData.rowData[5])
 
             //Se preparan con el formato que necesita la API de Google:
             newValuesArray = Object.entries(newData).map(
@@ -101,9 +103,12 @@ const updateCollaborator = async (req, res, next) => {
             newData = {
                 ...mergedObject,
                 ...fieldsToUpdate,
-                collaboratorImage:
-                    newImage ? newImage : 'Sin imagen', 
+                collaboratorImage: newImage ? newImage : 'Sin imagen',
             }
+
+            //Se borra la anterior imagen de Cloudinary:
+            if (oldData.collaboratorImage !== 'Sin imagen')
+                cloudinaryDelete(oldData.rowData[5])
 
             //Se preparan con el formato que necesita la API de Google:
             newValuesArray = Object.entries(newData).map(
@@ -126,7 +131,7 @@ const updateCollaborator = async (req, res, next) => {
             description: newData.description,
             role: newData.role || '',
             team: team,
-        }        
+        }
         //Se validan:
         const { error } =
             validationSchemaNewCollaborator.validate(dataToValidate)
