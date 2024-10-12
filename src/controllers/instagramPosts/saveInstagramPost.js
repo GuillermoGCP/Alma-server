@@ -3,12 +3,28 @@ import InstagramPostModel from '../../Database/models/InstagramPostModel.js'
 const saveInstagramPost = async (req, res, next) => {
     try {
         const postNumber = req.params.postNumber
-        const InstagramPost = new InstagramPostModel({
-            ...req.body,
+
+        //Comprobar si ya existe y si es necesario, sustituirlo:
+        const existingPost = await InstagramPostModel.findOne({
             postNumber: postNumber,
         })
 
-        await InstagramPost.save()
+        if (existingPost) {
+            await InstagramPostModel.replaceOne(
+                { postNumber: postNumber },
+                {
+                    ...req.body,
+                    postNumber: postNumber,
+                }
+            )
+        } else {
+            const NewInstagramPost = new InstagramPostModel({
+                ...req.body,
+                postNumber: postNumber,
+            })
+            await NewInstagramPost.save()
+        }
+
         res.send({
             message: 'Publicación de Instagram, guardada',
             post: req.body,
