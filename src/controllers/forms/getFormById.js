@@ -35,7 +35,7 @@ const getFormById = async (req, res, next) => {
         }
 
         //Si se publica, se guarda en Mongo:
-        if (publish) {
+        if (publish === 'publish') {
             formToSave = new FormModel(dataToSend)
             await formToSave.save()
         }

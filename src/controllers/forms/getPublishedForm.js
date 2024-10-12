@@ -1,13 +1,12 @@
 import FormModel from '../../Database/models/FormModel.js'
+import { generateError } from '../../utils/index.js'
 
 const getPublishedForm = async (req, res, next) => {
     try {
         const jsonNumber = req.params.jsonNumber
 
         if (!jsonNumber) {
-            return res.status(400).send({
-                message: 'El número de publicación es obligatorio.',
-            })
+            generateError('El número de publicación es obligatorio.')
         }
 
         const formFromData = await FormModel.findOne({
