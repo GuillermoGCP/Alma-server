@@ -7,11 +7,13 @@ import {
     getRowsData,
 } from '../../googleapis/methods/index.js'
 import { getColumnLetter, normalizeFieldName } from '../../utils/index.js'
+import FormModel from '../../Database/models/FormModel.js'
 
 const updateForm = async (req, res, next) => {
     try {
         const spreadsheetId = process.env.SPREADSHEET_ID
         const spreadsheetIdForms = process.env.SPREADSHEET_ID_FORMS
+        const publish = req.params.updateMongo
 
         //Poner el selector de socios/no socios al final de los campos:
         const unlessPartnerSelect = req.body.fields.filter((field) => {
@@ -117,9 +119,33 @@ const updateForm = async (req, res, next) => {
         //Envío los datos actualizados del formulario al front:
         //Edito la estructura de datos para que coincida con la esperada en el front:
         let dataToSend = {}
-        dataToSend[formDataString.formId] = {
-            formName: formDataString.formName,
-            fields: formDataString.fields,
+        dataToSend[updatedFormData.formId] = {
+            formName: updatedFormData.formName,
+            fields: updatedFormData.fields,
+        }
+        console.log(
+            'Datatosend',
+            dataToSend,
+            dataToSend.fields,
+            updatedFormData
+        )
+        // Verifico si está publicado, y si es así lo actualizo en Mongo:
+        if (publish === 'updateMongo') {
+            console.log('id', updatedFormData.formId)
+            const existingForm = await FormModel.findOne({
+                formId: updatedFormData.formId,
+            })
+
+            if (existingForm) {
+                console.log('formDB', existingForm, updatedFormData.fields)
+                await FormModel.updateOne(
+                    { formId: formData.formId },
+                    { $set: { fields: updatedFormData.fields } }
+                )
+                console.log(
+                    'El formulario publicado se actualizó exitosamente.'
+                )
+            }
         }
 
         res.status(200).json({

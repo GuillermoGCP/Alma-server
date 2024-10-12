@@ -1,4 +1,5 @@
 import express from 'express'
+
 import { generateCaptcha, validateCaptcha } from '../controllers/index.js'
 const router = express.Router()
 

@@ -2,9 +2,9 @@ import express from 'express'
 import dotenv from 'dotenv/config'
 import { join } from 'path'
 import conectDb from './src/Database/config.js'
-import cloudinary from './src/utils/cloudinaryConfig.js'
+// import cloudinary from './src/utils/cloudinaryConfig.js'
 import cors from 'cors'
-import { sessionMiddleware } from './src/middlewares/index.js'
+import { logRequests, sessionMiddleware } from './src/middlewares/index.js'
 import {
     activities,
     login,
@@ -65,6 +65,7 @@ const ruta = join(__dirname, 'src', 'assets', 'images')
 app.use('/images', express.static(ruta))
 
 // Rutas
+// app.use(logRequests) //Para registrar las peticiones que entran:
 app.use(activities)
 app.use(login)
 app.use(calendar)
