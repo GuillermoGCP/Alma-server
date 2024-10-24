@@ -5,6 +5,7 @@ import {
     updateRow,
 } from '../../googleapis/methods/index.js'
 import { filterProperties, formatDate } from '../../utils/index.js'
+import cloudinaryUpdate from '../cloudinary/updateImage.js'
 
 const updateEventController = async (req, res, next) => {
     try {
@@ -18,6 +19,19 @@ const updateEventController = async (req, res, next) => {
 
         //Traigo el evento del calendario:
         const existingEvent = await getEvent(eventId)
+
+        //Compruebo la imagen y la actualizo, si es necesario:
+        let image = existingEvent.extendedProperties.private.image
+        if (req.file) {
+            const imageUrl = await cloudinaryUpdate(
+                req.file,
+                existingEvent.extendedProperties.private.image,
+                'calendarEvents'
+            )
+            const { url } = imageUrl
+            image = url || 'sin imagen'
+        }
+
         const allowedProperties = [
             'summary',
             'location',
@@ -56,10 +70,11 @@ const updateEventController = async (req, res, next) => {
             extendedProperties: {
                 private: {
                     access: accessDataSheet,
+                    image,
                 },
             },
         }
-        
+
         //Lo actualizo:
         const response = await updateEvent(eventId, mergedEvent)
 
@@ -78,6 +93,7 @@ const updateEventController = async (req, res, next) => {
             formatDate(mergedEvent.end.dateTime),
             mergedEvent.location,
             mergedEvent.extendedProperties.private.access,
+            image,
         ]
         const dataToUpdate = await getRowsData(
             sheetId,

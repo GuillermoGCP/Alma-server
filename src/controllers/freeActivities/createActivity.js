@@ -5,6 +5,7 @@ import {
 } from '../../googleapis/methods/index.js'
 import { generateError, eventSchema } from '../../utils/index.js'
 import { formatDate } from '../../utils/index.js'
+import cloudinaryUpload from '../cloudinary/uploadImage.js'
 
 const createActivity = async (req, res, next) => {
     try {
@@ -35,8 +36,25 @@ const createActivity = async (req, res, next) => {
             generateError(error.message)
         }
 
+        // Subir la foto a cloudinary y guardar el url
+        let image = 'sin imagen'
+
+        if (req.file) {
+            const response = await cloudinaryUpload(req.file, 'calendarEvents')
+            image = response || 'sin imagen'
+        }
+
         //Añadir el evento al calendario:
-        const response = await addEvent(req.body)
+        const response = await addEvent({
+            ...req.body,
+            extendedProperties: {
+                ...req.body.extendedProperties,
+                private: {
+                    ...req.body.extendedProperties.private,
+                    image: image,
+                },
+            },
+        })
         if (!response.id) {
             generateError('Error al crear el evento en Google Calendar')
         }
@@ -51,6 +69,7 @@ const createActivity = async (req, res, next) => {
                 location,
                 accessDataSheet,
                 'confirmed',
+                image,
             ],
         ]
 
@@ -70,7 +89,7 @@ const createActivity = async (req, res, next) => {
 }
 export default createActivity
 
-//Ejemplo del objeto necesario para crear un evento y enviarlo a Google calendar:
+//Ejemplo del objeto necesario para crear un evento y enviarlo a Google calendar (extendedProperties son propiedades personalizadas, no necesarias para el calendario, pero sí para el desarrollo de la aplicación):
 
 // const event = {
 //     summary: "Reunión de Proyecto",  // Título del evento
@@ -95,6 +114,12 @@ export default createActivity
 //             { method: "popup", minutes: 10 }  // Mostrar popup 10 minutos antes del evento
 //         ]
 //     },
+// extendedProperties: {
+//     private: {
+//         access: "free" || "partners",
+//         image: "string"
+//
+//     }
 //     visibility: "private",  // Visibilidad del evento (puede ser 'default', 'public' o 'private')
 //     access: "partners"  // Acceso, en este caso para 'socios' (puede ser 'partners' o 'free')
 // };

@@ -17,17 +17,6 @@ const cancelEvent = async (req, res, next) => {
             ...existingEvent,
             summary: `EVENTO CANCELADO: ${existingEvent.summary}`,
             color: '9',
-            start: {
-                ...existingEvent.start,
-            },
-            end: {
-                ...existingEvent.end,
-            },
-            extendedProperties: {
-                private: {
-                    ...existingEvent.access,
-                },
-            },
         }
 
         const response = await updateEvent(eventId, mergedEvent)

@@ -37,6 +37,7 @@ const eventSchema = Joi.object({
     extendedProperties: Joi.object({
         private: Joi.object({
             access: Joi.string().valid('free', 'partners').required(),
+            image: Joi.string().optional(),
         }).required(),
     }).required(),
 }).custom((value, helpers) => {

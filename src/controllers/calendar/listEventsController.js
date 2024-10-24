@@ -5,7 +5,6 @@ const listEventsController = async (req, res, next) => {
         const calendarId = process.env.CALENDAR_ID
         const eventData = req.body
         eventData.calendarId = calendarId
-        // eventData.timeMin = new Date().toISOString()
         const response = await listEvents(eventData)
         res.send({
             message: 'Eventos obtenidos del calendario',
