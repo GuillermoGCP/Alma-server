@@ -10,13 +10,19 @@ import cloudinaryUpload from '../cloudinary/uploadImage.js'
 
 const updateEventController = async (req, res, next) => {
     try {
+        console.log("Req body: ", req.body);
+
+        const access = JSON.parse(req.body.extendedProperties).private.access;
+        const prevImage = JSON.parse(req.body.extendedProperties).private.image;
+        
+        
         const eventId = req.params.eventId
         const updatedData = req.body
         const sheetId = process.env.SPREADSHEET_ID
         let accessDataSheet
         if (
             req.body.extendedProperties &&
-            req.body.extendedProperties.private.access === 'free'
+            access === 'free'
         ) {
             accessDataSheet = 'libre'
         } else accessDataSheet = 'solo_socios'
@@ -25,13 +31,13 @@ const updateEventController = async (req, res, next) => {
         const existingEvent = await getEvent(eventId)
 
         //Compruebo la imagen y la actualizo, si es necesario:
-        let image = existingEvent.extendedProperties.private.image
+        let image = req.file;
 
         if (req.file) {
             const imageUrl = await cloudinaryUpload(req.file, 'calendarEvents')
             image = imageUrl || 'sin imagen'
             await cloudinaryDelete(
-                existingEvent.extendedProperties.private.image
+                prevImage
             )
         }
 
