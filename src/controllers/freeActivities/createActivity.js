@@ -10,17 +10,24 @@ import cloudinaryUpload from '../cloudinary/uploadImage.js'
 const createActivity = async (req, res, next) => {
     try {
         const sheetId = process.env.SPREADSHEET_ID
+        
         const {
             summary,
             description,
-            start,
-            end,
             location,
-            extendedProperties,
         } = req.body
 
+        const access = JSON.parse(req.body.extendedProperties).private.access;
+        const end = JSON.parse(req.body.end);
+        const start = JSON.parse(req.body.start);
+
+        // Parseo para validación en joi
+        req.body.end = end;
+        req.body.start = start;
+        req.body.extendedProperties = JSON.parse(req.body.extendedProperties);
+
         let accessDataSheet
-        if (extendedProperties.private.access === 'free') {
+        if (access === 'free') {
             accessDataSheet = 'libre'
         } else accessDataSheet = 'solo_socios'
 
@@ -48,10 +55,9 @@ const createActivity = async (req, res, next) => {
         const response = await addEvent({
             ...req.body,
             extendedProperties: {
-                ...req.body.extendedProperties,
                 private: {
-                    ...req.body.extendedProperties.private,
-                    image: image,
+                    access,
+                    image,
                 },
             },
         })
@@ -84,6 +90,8 @@ const createActivity = async (req, res, next) => {
             response,
         })
     } catch (error) {
+        console.log(error);
+        
         next(error)
     }
 }

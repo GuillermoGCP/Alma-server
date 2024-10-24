@@ -33,10 +33,10 @@ const eventSchema = Joi.object({
             .optional(),
     }).optional(),
     visibility: Joi.string().valid('default', 'public', 'private').optional(),
-    access: Joi.string().valid('partners', 'free').optional(),
+    access: Joi.string().valid('solo_socios', 'free').optional(),
     extendedProperties: Joi.object({
         private: Joi.object({
-            access: Joi.string().valid('free', 'partners').required(),
+            access: Joi.string().valid('free', 'solo_socios').required(),
             image: Joi.string().optional(),
         }).required(),
     }).required(),
