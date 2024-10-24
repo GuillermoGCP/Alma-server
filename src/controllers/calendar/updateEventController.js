@@ -5,7 +5,8 @@ import {
     updateRow,
 } from '../../googleapis/methods/index.js'
 import { filterProperties, formatDate } from '../../utils/index.js'
-import cloudinaryUpdate from '../cloudinary/updateImage.js'
+import cloudinaryDelete from '../cloudinary/deleteImage.js'
+import cloudinaryUpload from '../cloudinary/uploadImage.js'
 
 const updateEventController = async (req, res, next) => {
     try {
@@ -13,7 +14,10 @@ const updateEventController = async (req, res, next) => {
         const updatedData = req.body
         const sheetId = process.env.SPREADSHEET_ID
         let accessDataSheet
-        if (req.body.extendedProperties.private.access === 'free') {
+        if (
+            req.body.extendedProperties &&
+            req.body.extendedProperties.private.access === 'free'
+        ) {
             accessDataSheet = 'libre'
         } else accessDataSheet = 'solo_socios'
 
@@ -22,15 +26,17 @@ const updateEventController = async (req, res, next) => {
 
         //Compruebo la imagen y la actualizo, si es necesario:
         let image = existingEvent.extendedProperties.private.image
+
+        console.log('De la base', image)
+
         if (req.file) {
-            const imageUrl = await cloudinaryUpdate(
-                req.file,
-                existingEvent.extendedProperties.private.image,
-                'calendarEvents'
+            const imageUrl = await cloudinaryUpload(req.file, 'calendarEvents')
+            image = imageUrl || 'sin imagen'
+            await cloudinaryDelete(
+                existingEvent.extendedProperties.private.image
             )
-            const { url } = imageUrl
-            image = url || 'sin imagen'
         }
+        console.log('Tras actualizar', image)
 
         const allowedProperties = [
             'summary',
