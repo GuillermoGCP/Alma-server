@@ -27,8 +27,6 @@ const updateEventController = async (req, res, next) => {
         //Compruebo la imagen y la actualizo, si es necesario:
         let image = existingEvent.extendedProperties.private.image
 
-        console.log('De la base', image)
-
         if (req.file) {
             const imageUrl = await cloudinaryUpload(req.file, 'calendarEvents')
             image = imageUrl || 'sin imagen'
@@ -36,7 +34,6 @@ const updateEventController = async (req, res, next) => {
                 existingEvent.extendedProperties.private.image
             )
         }
-        console.log('Tras actualizar', image)
 
         const allowedProperties = [
             'summary',
