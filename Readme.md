@@ -2,10 +2,68 @@
 
 The project involves developing a website for "Alma Lactancia," a non-profit organization dedicated to supporting and promoting breastfeeding. The site will provide easy access to vital information, educational resources, upcoming events, and support services for mothers and families. Its goal is to enhance the association's outreach and facilitate access to valuable resources and support.
 
-**Scripts**:
-<small>npm run dev</small>, to start the project in development mode.
+## Tech Stack
 
-**Stack**: <small>"cors": "^2.8.5", "dotenv": "^16.4.5", "express": "^4.19.2", "googleapis": "^140.0.1", "jsonwebtoken": "^9.0.2", "bcrypt": "^5.1.1",</small>
+### Frontend
+
+| Technology              | Version       | Description                                          |
+|--------------------------|---------------|------------------------------------------------------|
+| **React**                | ^18.3.1       | JavaScript library for building user interfaces      |
+| **Vite**                 | ^5.4.8        | Bundler and development server                       |
+| **Material-UI (MUI)**    | ^6.0.1        | UI component framework                               |
+| **React Router**         | ^6.25.1       | Route management for the application                  |
+| **Axios**                | ^1.7.7        | HTTP client for making API requests                   |
+| **React Hook Form**      | ^7.53.0       | Form handling with validation and state management   |
+| **React Big Calendar**   | ^1.13.2       | Calendar component                                   |
+| **React Calendar**       | ^5.0.0        | Additional calendar component                        |
+| **React Toastify**       | ^10.0.5       | Library for displaying toast notifications           |
+| **Font Awesome**         | ^6.6.0        | SVG icons for UI                                     |
+| **Date-fns**             | ^3.6.0        | Library for date manipulation                        |
+| **GAPI (Google APIs)**   | ^1.2.0        | Integration with Google API                          |
+| **UUID**                 | ^10.0.0       | Generation of unique identifiers                     |
+| **Testing Libraries**    | -             | Tools for testing (Jest, React Testing)              |
+| **Dotenv**               | ^16.4.5       | Environment variable management                      |
+| **CORS**                 | ^2.8.5        | Cross-Origin Resource Sharing                         |
+
+#### Scripts:
+- **dev**: `vite`
+- **build**: `vite build`
+- **serve**: `vite preview`
+
+---
+
+### Backend
+
+| Technology              | Version       | Description                                          |
+|--------------------------|---------------|------------------------------------------------------|
+| **Node.js**              | -             | JavaScript runtime environment                       |
+| **Express**              | ^4.19.2       | Framework for building HTTP servers                  |
+| **Mongoose**             | ^8.7.0        | ODM (Object Data Modeling) for MongoDB               |
+| **JWT (JSON Web Token)** | ^9.0.2        | Authentication using JWT tokens                      |
+| **Bcrypt**               | ^5.1.1        | Password hashing and encryption                      |
+| **Joi**                  | ^17.13.3      | Data validation library                              |
+| **Google APIs**          | ^140.0.1      | Integration with Google APIs                         |
+| **Cloudinary**           | ^2.5.0        | Cloud image management                               |
+| **Redis**                | ^4.7.0        | Session management (in-memory caching)               |
+| **Multer**               | ^1.4.5-lts.1  | Middleware for handling file uploads                 |
+| **SVG Captcha**          | ^1.4.0        | Generation of SVG CAPTCHA                            |
+| **Node-fetch**           | ^3.3.2        | HTTP client for making requests                      |
+| **Connect-Redis**        | ^7.1.1        | Redis connection for session management              |
+
+#### Scripts:
+- **dev**: `node --watch server.js`
+- **start**: `node server.js`
+
+---
+
+### Others
+
+| Technology              | Version       | Description                                          |
+|--------------------------|---------------|------------------------------------------------------|
+| **CORS**                 | ^2.8.5        | Cross-Origin Resource Sharing                         |
+| **Dotenv**               | ^16.4.5       | Environment variable management                      |
+| **UUID**                 | ^10.0.0       | Generation of unique identifiers                     |
+
 
 ### Endpoints:
 
