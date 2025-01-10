@@ -7,15 +7,17 @@ import captcha from './captchaRouter.js'
 import forms from './formsRouter.js'
 import experiences from './experiencesRouter.js'
 import instagram from './instagramRouter.js'
+import partners from './partnerRouter.js'
 
 export {
-    activities,
-    login,
-    calendar,
-    collaborator,
-    contact,
-    captcha,
-    forms,
-    experiences,
-    instagram,
+  activities,
+  login,
+  calendar,
+  collaborator,
+  contact,
+  captcha,
+  forms,
+  experiences,
+  instagram,
+  partners,
 }

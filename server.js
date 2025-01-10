@@ -6,15 +6,16 @@ import conectDb from './src/Database/config.js'
 import cors from 'cors'
 import { logRequests, sessionMiddleware } from './src/middlewares/index.js'
 import {
-    activities,
-    login,
-    calendar,
-    collaborator,
-    contact,
-    captcha,
-    forms,
-    experiences,
-    instagram,
+  activities,
+  login,
+  calendar,
+  collaborator,
+  contact,
+  captcha,
+  forms,
+  experiences,
+  instagram,
+  partners,
 } from './src/routes/index.js'
 import { notFound, manageError } from './src/middlewares/index.js'
 
@@ -25,22 +26,22 @@ app.set('trust proxy', 1) //Por si Vercel actúa como proxy (solo depliegue)
 
 //Direcciones permitidas:
 const whitelist = [
-    'http://localhost:5173',
-    'http://localhost:5174',
-    'https://alma-web-one.vercel.app',
-    'https://alma-lactancia-web.vercel.app',
-    'https://alma-lactancia-web3.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'https://alma-web-one.vercel.app',
+  'https://alma-lactancia-web.vercel.app',
+  'https://alma-lactancia-web3.vercel.app',
 ]
 
 const corsOptions = {
-    origin: function (origin, callback) {
-        if (whitelist.indexOf(origin) !== -1 || !origin) {
-            callback(null, true)
-        } else {
-            callback(new Error('Not allowed by CORS'))
-        }
-    },
-    credentials: true,
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1 || !origin) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
+  credentials: true,
 }
 
 app.use(cors(corsOptions))
@@ -75,6 +76,7 @@ app.use(captcha)
 app.use(forms)
 app.use(experiences)
 app.use(instagram)
+app.use(partners)
 
 //Middlewares
 app.use(notFound)
@@ -82,5 +84,5 @@ app.use(manageError)
 
 //Server:
 app.listen(process.env.PORT, () => {
-    console.log(`Servidor activo en el puerto ${process.env.PORT}`)
+  console.log(`Servidor activo en el puerto ${process.env.PORT}`)
 })
