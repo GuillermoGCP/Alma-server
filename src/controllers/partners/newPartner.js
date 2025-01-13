@@ -33,6 +33,7 @@ const newPartner = async (req, res, next) => {
         phone ? phone : 'no proporcionado',
         formatDate(),
         formatDate(),
+        'Alta nueva',
       ],
     ]
 

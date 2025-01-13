@@ -1,5 +1,4 @@
-import { generateError } from '../../utils/index.js'
-import isSuscriptionExpired from '../../utils/isSuscriptionExpired.js'
+import { generateError, isSubscriptionExpired } from '../../utils/index.js'
 import {
   validationSchemaRenewPartner,
   formatDate,
@@ -44,31 +43,54 @@ const newPartner = async (req, res, next) => {
       )
     }
     //Comprobar si todavía está vigente la suscripción:
-    const { rowData } = await getRowsData(sheetId, 'Socios', {
+    const checkIsUnsuscribed = await getRowsData(sheetId, 'Socios', {
       sheetName: 'Socios',
-      field: 'id',
-      value: id,
+      field: 'state',
+      value: `Baja voluntaria: ${id}`,
       newValue: '',
     })
-    const lastDateOfRenovation = parseCustomDateToISO(rowData[6])
-    if (!isSuscriptionExpired(lastDateOfRenovation)) {
-      generateError(
-        'La suscripción todavía está activa, por favor, espere a su vencimiento para renovar'
-      )
-      return
+
+    //Solo se comprobará si el socio no se ha dado de baja. (Si se ha dado de baja por error podrá volver a activar la suscripción):
+    let dateOfRenovation
+    if (!checkIsUnsuscribed.rowData) {
+      const { rowData } = await getRowsData(sheetId, 'Socios', {
+        sheetName: 'Socios',
+        field: 'id',
+        value: id,
+        newValue: '',
+      })
+      dateOfRenovation = rowData[6]
+      const lastDateOfRenovation = parseCustomDateToISO(rowData[6])
+      if (!isSubscriptionExpired(lastDateOfRenovation)) {
+        generateError(
+          'La suscripción todavía está activa, por favor, espere a su vencimiento para renovar'
+        )
+        return
+      }
     }
+
     const formattedDate = formatDate()
     await updateCell(
       sheetId,
       'Socios',
       6,
       emailValues.valueRowIndex,
-      formattedDate
+      formattedDate,
+      undefined
+    )
+    await updateCell(
+      sheetId,
+      'Socios',
+      7,
+      emailValues.valueRowIndex,
+      'Renovado',
+      undefined,
+      { red: 1, green: 1, blue: 1 }
     )
 
     res.send({
       message: 'Se ha renovado la suscripción correctamente',
-      lastDateOfRenovation: rowData[6],
+      lastDateOfRenovation: dateOfRenovation,
       currentDateOfRenovation: formattedDate,
     })
   } catch (error) {

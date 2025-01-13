@@ -8,6 +8,7 @@ import groupDataById from './groupDataById.js'
 import normalizeFieldName from './normalizeFieldName.js'
 import unnormalizeFieldName from './unnormalizeFieldName.js'
 import generateCode from './generateCode.js'
+import isSubscriptionExpired from './isSuscriptionExpired.js'
 import {
   validationSchemaLogin,
   validationSchemaNewCollaborator,
@@ -40,4 +41,5 @@ export {
   validationUpdateExperiences,
   generateCode,
   validationSchemaRenewPartner,
+  isSubscriptionExpired,
 }

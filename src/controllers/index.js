@@ -50,6 +50,9 @@ import getHomeData from './homeDataController/getHomeData.js'
 
 import newPartner from './partners/newPartner.js'
 import renewPartnership from './partners/renewPartnership.js'
+import unsuscribePartnership from './partners/unsuscribePartnership.js'
+import checkSubscription from './partners/checkSubscription.js'
+import checkAllSubscriptions from './partners/checkAllSubscriptions.js'
 
 export {
   createActivity,
@@ -94,4 +97,7 @@ export {
   deleteExperience,
   newPartner,
   renewPartnership,
+  unsuscribePartnership,
+  checkSubscription,
+  checkAllSubscriptions,
 }

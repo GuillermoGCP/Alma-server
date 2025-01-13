@@ -1,4 +1,4 @@
-const isSuscriptionExpired = (date) => {
+const isSubscriptionExpired = (date) => {
   const lastDate = new Date(date)
   const currentDate = new Date()
 
@@ -9,4 +9,4 @@ const isSuscriptionExpired = (date) => {
   )
 }
 
-export default isSuscriptionExpired
+export default isSubscriptionExpired
