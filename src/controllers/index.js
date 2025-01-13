@@ -49,6 +49,7 @@ import saveHomeData from './homeDataController/saveHomeData.js'
 import getHomeData from './homeDataController/getHomeData.js'
 
 import newPartner from './partners/newPartner.js'
+import renewPartnership from './partners/renewPartnership.js'
 
 export {
   createActivity,
@@ -92,4 +93,5 @@ export {
   getFilteredExperiences,
   deleteExperience,
   newPartner,
+  renewPartnership,
 }

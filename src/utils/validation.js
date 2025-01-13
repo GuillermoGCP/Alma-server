@@ -82,6 +82,13 @@ const validationSchemaNewPartner = Joi.object({
   phone: Joi.number().optional(),
 })
 
+//Renovación de socios:
+
+const validationSchemaRenewPartner = Joi.object({
+  id: Joi.string().max(4).required(),
+  email: Joi.string().email().required(),
+})
+
 //Experiencias:
 const validationSchemaNewExperiences = Joi.object({
   text: Joi.string().min(50).max(1800).required(),
@@ -100,4 +107,5 @@ export {
   validationSchemaNewExperiences,
   validationUpdateExperiences,
   validationSchemaNewPartner,
+  validationSchemaRenewPartner,
 }

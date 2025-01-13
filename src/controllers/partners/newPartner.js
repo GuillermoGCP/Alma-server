@@ -1,6 +1,10 @@
 import { generateError } from '../../utils/index.js'
-import { validationSchemaNewPartner } from '../../utils/index.js'
-import { insertRow, allSheetData } from '../../googleapis/methods/index.js'
+import { validationSchemaNewPartner, formatDate } from '../../utils/index.js'
+import {
+  insertRow,
+  allSheetData,
+  getCoordinates,
+} from '../../googleapis/methods/index.js'
 import { generateCode } from '../../utils/index.js'
 
 const newPartner = async (req, res, next) => {
@@ -9,8 +13,28 @@ const newPartner = async (req, res, next) => {
 
     const { name, surname, email, phone } = req.body
 
+    //Comprobar si el email ya existe en las hojas de cálculo:
+    const { rows, headers, nextEmptyRow } = await allSheetData(
+      sheetId,
+      'Socios'
+    )
+    const { valueRowIndex } = getCoordinates(rows, headers, 'email', email)
+    if (valueRowIndex !== -1) {
+      generateError('Ya existe un email en la base de datos')
+      return
+    }
     const id = generateCode(4)
-    const dataToInsert = [[id, name, surname, email, phone ? phone : '']]
+    const dataToInsert = [
+      [
+        id,
+        name,
+        surname,
+        email,
+        phone ? phone : 'no proporcionado',
+        formatDate(),
+        formatDate(),
+      ],
+    ]
 
     // Validación de datos:
     const { error } = validationSchemaNewPartner.validate(req.body)
@@ -20,18 +44,19 @@ const newPartner = async (req, res, next) => {
       generateError(error.message)
     }
 
-    const values = await allSheetData(sheetId, 'Socios')
-    const { nextEmptyRow } = values
+    await insertRow(sheetId, 'Socios', nextEmptyRow, dataToInsert)
 
-    const partnerAdded = await insertRow(
-      sheetId,
-      'Socios',
-      nextEmptyRow,
-      dataToInsert
-    )
     res.send({
       message: 'Socio añadido correctamente',
-      partnerAdded: partnerAdded,
+      partnerAdded: {
+        id,
+        name,
+        surname,
+        email,
+        phone: phone ? phone : 'No proporcionado',
+        registrationData: dataToInsert[0][5],
+        lastRenovation: dataToInsert[0][6],
+      },
       id: id,
     })
   } catch (error) {

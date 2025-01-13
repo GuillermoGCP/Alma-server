@@ -16,6 +16,7 @@ import {
   validationSchemaNewExperiences,
   validationUpdateExperiences,
   validationSchemaNewPartner,
+  validationSchemaRenewPartner,
 } from './validation.js'
 
 export {
@@ -38,4 +39,5 @@ export {
   validationSchemaNewExperiences,
   validationUpdateExperiences,
   generateCode,
+  validationSchemaRenewPartner,
 }
