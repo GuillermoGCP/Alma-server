@@ -38,7 +38,12 @@ const newPartner = async (req, res, next) => {
     ]
 
     // Validación de datos:
-    const { error } = validationSchemaNewPartner.validate(req.body)
+    const { error } = validationSchemaNewPartner.validate({
+      name,
+      surname,
+      email,
+      ...(phone && { phone: phone.toString() }),
+    })
 
     if (error) {
       error.message = error.details[0].message

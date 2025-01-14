@@ -18,9 +18,13 @@ import {
   partners,
 } from './src/routes/index.js'
 import { notFound, manageError } from './src/middlewares/index.js'
+import { setupCronJobs } from './src/utils/index.js'
 
 //Crear instancia de Express:
 const app = express()
+
+//Tareas programadas:
+setupCronJobs()
 
 app.set('trust proxy', 1) //Por si Vercel actúa como proxy (solo depliegue)
 

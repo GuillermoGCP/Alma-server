@@ -9,6 +9,7 @@ import normalizeFieldName from './normalizeFieldName.js'
 import unnormalizeFieldName from './unnormalizeFieldName.js'
 import generateCode from './generateCode.js'
 import isSubscriptionExpired from './isSuscriptionExpired.js'
+import setupCronJobs from './cronJobs.js'
 import {
   validationSchemaLogin,
   validationSchemaNewCollaborator,
@@ -42,4 +43,5 @@ export {
   generateCode,
   validationSchemaRenewPartner,
   isSubscriptionExpired,
+  setupCronJobs,
 }
