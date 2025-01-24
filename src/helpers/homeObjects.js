@@ -83,13 +83,13 @@ const combinedHomeObjectCreator = async (imageHome, logo, oldData, newData) => {
   return {
     home: {
       imageHome: imageHome,
-      titleHome: newData.titleHome
+      titleHome: newData.home?.titleHome
         ? {
             es: newData.home.titleHome,
             gl: await translateText(newData.home.titleHome, 'es-gl'),
           }
         : oldData.home.titleHome,
-      sectionText: newData.sectionText
+      sectionText: newData.home?.sectionText
         ? {
             es: newData.home.sectionText,
             gl: await translateText(newData.home.sectionText, 'es-gl'),
@@ -102,47 +102,47 @@ const combinedHomeObjectCreator = async (imageHome, logo, oldData, newData) => {
       logo: logo,
     },
     library: {
-      lactationResources: newData.library.lactationResources
+      lactationResources: newData.library?.lactationResources
         ? await Promise.all(
             newData.library.lactationResources.map((item) => {
               return translateTitle(item)
             })
           )
         : oldData.library.lactationResources,
-      lactationBooks: newData.library.lactationBooks
+      lactationBooks: newData.library?.lactationBooks
         ? newData.library.lactationBooks
         : oldData.library.lactationBooks,
-      pregnancyResources: newData.library.pregnancyResources
+      pregnancyResources: newData.library?.pregnancyResources
         ? await Promise.all(
             newData.library.pregnancyResources.map((item) => {
               return translateTitle(item)
             })
           )
         : oldData.library.pregnancyResources,
-      pregnancyBooks: newData.library.pregnancyBooks
+      pregnancyBooks: newData.library?.pregnancyBooks
         ? newData.library.pregnancyBooks
         : oldData.library.pregnancyBooks,
-      parentingResources: newData.library.parentingResources
+      parentingResources: newData.library?.parentingResources
         ? await Promise.all(
             newData.library.parentingResources.map((item) => {
               return translateTitle(item)
             })
           )
         : oldData.library.parentingResources,
-      parentingBooks: newData.library.parentingBooks
+      parentingBooks: newData.library?.parentingBooks
         ? newData.library.parentingBooks
         : oldData.library.parentingBooks,
-      nutritionBlogs: newData.library.nutritionBlogs
+      nutritionBlogs: newData.library?.nutritionBlogs
         ? await Promise.all(
             newData.library.nutritionBlogs.map((item) => {
               return translateTitle(item)
             })
           )
         : oldData.library.nutritionBlogs,
-      nutritionBooks: newData.library.nutritionBooks
+      nutritionBooks: newData.library?.nutritionBooks
         ? newData.library.nutritionBooks
         : oldData.library.nutritionBooks,
-      archiveBlogs: newData.library.archiveBlogs
+      archiveBlogs: newData.library?.archiveBlogs
         ? await Promise.all(
             newData.library.archiveBlogs.map((item) => {
               return translateTitle(item)

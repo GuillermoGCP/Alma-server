@@ -1,10 +1,9 @@
-import HomeModel from '../../Database/models/HomeModel.js'
+import HomeModel from '../../Database/models/HomeModel2.js'
 import cloudinaryUpdate from '../cloudinary/updateImage.js'
 import {
   newHomeObjectCreator,
   combinedHomeObjectCreator,
 } from '../../helpers/homeObjects.js'
-import translateText from '../../utils/translateText.js'
 
 const homeData = async (req, res, next) => {
   try {
@@ -46,29 +45,6 @@ const homeData = async (req, res, next) => {
         existingData,
         req.body
       )
-      // Creo el objeto combinado:
-      // newJsonData = {
-      //   home: {
-      //     ...existingData.home,
-      //     ...(req.body.home || {}),
-      //     imageHome: imageHome,
-      //     titleHome: req.body.titleHome
-      //       ? {
-      //           es: req.body.home.titleHome,
-      //           gl: await translateText(req.body.home.titleHome, 'es-gl'),
-      //         }
-      //       : existingData.home.titleHome,
-      //   },
-      //   generalSettings: {
-      //     ...existingData.generalSettings,
-      //     ...(req.body.generalSettings || {}),
-      //     logo: logo,
-      //   },
-      //   library: {
-      //     ...existingData.library,
-      //     ...(req.body.library || {}),
-      //   },
-      // }
 
       // Actualizar el documento existente en Mongo:
       await HomeModel.updateOne({ _id: existingData._id }, newJsonData)

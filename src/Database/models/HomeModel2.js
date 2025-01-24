@@ -3,8 +3,14 @@ import mongoose from 'mongoose'
 // Esquema para los recursos de lactancia
 const lactationResourceSchema = new mongoose.Schema({
   title: {
-    type: String,
-    required: true,
+    es: {
+      type: String,
+      required: true,
+    },
+    gl: {
+      type: String,
+      required: true,
+    },
   },
   link: {
     type: String,
@@ -15,8 +21,14 @@ const lactationResourceSchema = new mongoose.Schema({
 // Esquema para los recursos de embarazo
 const pregnancyResourceSchema = new mongoose.Schema({
   title: {
-    type: String,
-    required: true,
+    es: {
+      type: String,
+      required: true,
+    },
+    gl: {
+      type: String,
+      required: true,
+    },
   },
   link: {
     type: String,
@@ -27,8 +39,14 @@ const pregnancyResourceSchema = new mongoose.Schema({
 // Esquema para los recursos de crianza
 const parentingResourceSchema = new mongoose.Schema({
   title: {
-    type: String,
-    required: true,
+    es: {
+      type: String,
+      required: true,
+    },
+    gl: {
+      type: String,
+      required: true,
+    },
   },
   link: {
     type: String,
@@ -39,8 +57,14 @@ const parentingResourceSchema = new mongoose.Schema({
 // Esquema para los blogs de alimentación
 const nutritionBlogSchema = new mongoose.Schema({
   title: {
-    type: String,
-    required: true,
+    es: {
+      type: String,
+      required: true,
+    },
+    gl: {
+      type: String,
+      required: true,
+    },
   },
   link: {
     type: String,
@@ -51,8 +75,14 @@ const nutritionBlogSchema = new mongoose.Schema({
 // Esquema para los blogs de hemeroteca
 const archiveBlogSchema = new mongoose.Schema({
   title: {
-    type: String,
-    required: true,
+    es: {
+      type: String,
+      required: true,
+    },
+    gl: {
+      type: String,
+      required: true,
+    },
   },
   link: {
     type: String,
@@ -64,16 +94,28 @@ const archiveBlogSchema = new mongoose.Schema({
 const homeSchema = new mongoose.Schema({
   home: {
     sectionText: {
-      type: String,
-      required: true,
+      es: {
+        type: String,
+        required: true,
+      },
+      gl: {
+        type: String,
+        required: true,
+      },
     },
     imageHome: {
       type: String,
       required: true,
     },
     titleHome: {
-      type: String,
-      required: true,
+      es: {
+        type: String,
+        required: true,
+      },
+      gl: {
+        type: String,
+        required: true,
+      },
     },
   },
   generalSettings: {
@@ -119,6 +161,6 @@ const homeSchema = new mongoose.Schema({
   },
 })
 
-const HomeModel = mongoose.model('Home', homeSchema)
+const HomeModel = mongoose.model('Home2', homeSchema)
 
 export default HomeModel

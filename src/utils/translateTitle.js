@@ -6,7 +6,7 @@ const translateTitle = async (item) => {
     ...item,
     title: { es: item.title, gl: await translateText(item.title, 'es-gl') },
   }
-  console.log('salida', newItem)
+
   return newItem
 }
 
