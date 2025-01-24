@@ -10,6 +10,10 @@ import unnormalizeFieldName from './unnormalizeFieldName.js'
 import generateCode from './generateCode.js'
 import isSubscriptionExpired from './isSuscriptionExpired.js'
 import setupCronJobs from './cronJobs.js'
+import translateText from './translateText.js'
+import executeCommand from './executeCommand.js'
+import translateTitle from './translateTitle.js'
+import translateTextWithPageBreak from './translateTextWithPageBreak.js'
 import {
   validationSchemaLogin,
   validationSchemaNewCollaborator,
@@ -44,4 +48,8 @@ export {
   validationSchemaRenewPartner,
   isSubscriptionExpired,
   setupCronJobs,
+  translateText,
+  executeCommand,
+  translateTitle,
+  translateTextWithPageBreak,
 }

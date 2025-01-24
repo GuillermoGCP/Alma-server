@@ -1,89 +1,94 @@
 import HomeModel from '../../Database/models/HomeModel.js'
 import cloudinaryUpdate from '../cloudinary/updateImage.js'
+import {
+  newHomeObjectCreator,
+  combinedHomeObjectCreator,
+} from '../../helpers/homeObjects.js'
+import translateText from '../../utils/translateText.js'
 
 const homeData = async (req, res, next) => {
-    try {
-        let savedData
-        let newJsonData
+  try {
+    let savedData
+    let newJsonData
 
-        //Extraigo los datos antiguos de la base de datos Mongo:
-        const existingData = await HomeModel.findOne()
+    // Extraigo los datos antiguos de la base de datos Mongo:
+    const existingData = await HomeModel.findOne()
 
-        //Manejo las referencias de las imágenes nuevas (si las hay) y las antiguas:
-        let imageHome = existingData.home.imageHome || 'sin imagen'
-        let logo = existingData.generalSettings.logo || 'sin imagen'
+    // Manejo las referencias de las imágenes nuevas (si las hay) y las antiguas:
+    let imageHome = existingData.home.imageHome || 'sin imagen'
+    let logo = existingData.generalSettings.logo || 'sin imagen'
 
-        if (req.files) {
-            if (req.files['imageHome']) {
-                // Actualizar en cloudinary
-                const updateResponse = await cloudinaryUpdate(
-                    { buffer: req.files['imageHome'][0].buffer },
-                    imageHome,
-                    'home'
-                ) // Borramos imagen actual de la nube
-                imageHome = updateResponse.url
-            }
-            if (req.files['logo']) {
-                // Actualizar en cloudinary
-                const updateResponse = await cloudinaryUpdate(
-                    { buffer: req.files['logo'][0].buffer },
-                    logo,
-                    'home'
-                ) // Borramos logo actual de la nube
-                logo = updateResponse.url
-            }
-        }
-
-        if (existingData) {
-            //Creo el objeto combinado:
-            newJsonData = {
-                home: {
-                    ...existingData.home,
-                    ...(req.body.home || {}),
-                    imageHome: imageHome,
-                },
-                generalSettings: {
-                    ...existingData.generalSettings,
-                    ...(req.body.generalSettings || {}),
-                    logo: logo,
-                },
-                library: {
-                    ...existingData.library,
-                    ...(req.body.library || {}),
-                },
-            }
-
-            // Actualizar el documento existente en Mongo:
-            await HomeModel.updateOne({ _id: existingData._id }, newJsonData)
-        } else {
-            // Si no, guardo un nuevo documento
-            newJsonData = {
-                home: {
-                    ...(req.body.home || {}),
-                    imageHome: imageHome,
-                },
-                generalSettings: {
-                    ...(req.body.generalSettings || {}),
-                    logo: logo,
-                },
-                library: {
-                    ...(req.body.library || {}),
-                },
-            }
-
-            // Crear un nuevo documento en la base de datos:
-            savedData = new HomeModel(newJsonData)
-            await savedData.save()
-        }
-
-        res.send({
-            message: 'Datos de "Home", guardados correctamente',
-            data: { ...newJsonData, id: existingData._id.toString() },
-        })
-    } catch (error) {
-        console.log(error)
-        next(error)
+    if (req.files) {
+      if (req.files['imageHome']) {
+        // Actualizar en cloudinary
+        const updateResponse = await cloudinaryUpdate(
+          { buffer: req.files['imageHome'][0].buffer },
+          imageHome,
+          'home'
+        ) // Borramos imagen actual de la nube
+        imageHome = updateResponse.url
+      }
+      if (req.files['logo']) {
+        // Actualizar en cloudinary
+        const updateResponse = await cloudinaryUpdate(
+          { buffer: req.files['logo'][0].buffer },
+          logo,
+          'home'
+        ) // Borramos logo actual de la nube
+        logo = updateResponse.url
+      }
     }
+
+    if (existingData) {
+      newJsonData = await combinedHomeObjectCreator(
+        imageHome,
+        logo,
+        existingData,
+        req.body
+      )
+      // Creo el objeto combinado:
+      // newJsonData = {
+      //   home: {
+      //     ...existingData.home,
+      //     ...(req.body.home || {}),
+      //     imageHome: imageHome,
+      //     titleHome: req.body.titleHome
+      //       ? {
+      //           es: req.body.home.titleHome,
+      //           gl: await translateText(req.body.home.titleHome, 'es-gl'),
+      //         }
+      //       : existingData.home.titleHome,
+      //   },
+      //   generalSettings: {
+      //     ...existingData.generalSettings,
+      //     ...(req.body.generalSettings || {}),
+      //     logo: logo,
+      //   },
+      //   library: {
+      //     ...existingData.library,
+      //     ...(req.body.library || {}),
+      //   },
+      // }
+
+      // Actualizar el documento existente en Mongo:
+      await HomeModel.updateOne({ _id: existingData._id }, newJsonData)
+    } else {
+      // Si no, guardo un nuevo documento
+      newJsonData = await newHomeObjectCreator(imageHome, logo, req.body)
+
+      // Crear un nuevo documento en la base de datos:
+      savedData = new HomeModel(newJsonData)
+      await savedData.save()
+    }
+
+    res.send({
+      message: 'Datos de "Home", guardados correctamente',
+      data: { ...newJsonData, id: existingData._id.toString() },
+    })
+  } catch (error) {
+    console.log(error)
+    next(error)
+  }
 }
 export default homeData
 
