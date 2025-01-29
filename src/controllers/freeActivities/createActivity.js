@@ -1,92 +1,96 @@
 import {
-    insertRow,
-    addEvent,
-    allSheetData,
+  insertRow,
+  addEvent,
+  allSheetData,
 } from '../../googleapis/methods/index.js'
-import { generateError, eventSchema } from '../../utils/index.js'
+import {
+  generateError,
+  eventSchema,
+  translateTextWithPageBreak,
+} from '../../utils/index.js'
 import { formatDate } from '../../utils/index.js'
 import cloudinaryUpload from '../cloudinary/uploadImage.js'
 
 const createActivity = async (req, res, next) => {
-    try {
-        const sheetId = process.env.SPREADSHEET_ID
-        
-        const {
-            summary,
-            description,
-            start,
-            end,
-            location,
-            extendedProperties,
-        } = req.body
+  try {
+    const sheetId = process.env.SPREADSHEET_ID
 
-        let accessDataSheet
-        if (extendedProperties.private.access === 'free') {
-            accessDataSheet = 'libre'
-        } else accessDataSheet = 'solo_socios'
+    const { summary, description, start, end, location, extendedProperties } =
+      req.body
 
-        //Formato de fechas para insertar en la hoja de Google:
-        const formattedStartDate = formatDate(start.dateTime)
-        const formattedEndtDate = formatDate(end.dateTime)
+    let accessDataSheet
+    if (extendedProperties.private.access === 'free') {
+      accessDataSheet = 'libre'
+    } else accessDataSheet = 'solo_socios'
 
-        //Validación de datos:
-        const { error } = eventSchema.validate(req.body)
+    //Formato de fechas para insertar en la hoja de Google:
+    const formattedStartDate = formatDate(start.dateTime)
+    const formattedEndtDate = formatDate(end.dateTime)
 
-        if (error) {
-            error.message = error.details[0].message
-            generateError(error.message)
-        }
+    //Validación de datos:
+    const { error } = eventSchema.validate(req.body)
 
-        // Subir la foto a cloudinary y guardar el url
-        let image = 'sin imagen'
-
-        if (req.file) {
-            const response = await cloudinaryUpload(req.file, 'calendarEvents')
-            image = response || 'sin imagen'
-        }
-
-        //Añadir el evento al calendario:
-        const response = await addEvent({
-            ...req.body,
-            extendedProperties: {
-                ...req.body.extendedProperties,
-                private: {
-                    ...req.body.extendedProperties.private,
-                    image: image,
-                },
-            },
-        })
-        if (!response.id) {
-            generateError('Error al crear el evento en Google Calendar')
-        }
-        //Formato de datos para insertar en la hoja de Google:
-        const dataToInsert = [
-            [
-                response.id,
-                summary,
-                description,
-                formattedStartDate,
-                formattedEndtDate,
-                location,
-                accessDataSheet,
-                'confirmed',
-                image,
-            ],
-        ]
-
-        //Obtener la siguiente fila vacía:
-        const values = await allSheetData(sheetId, 'Actividades')
-        const { nextEmptyRow } = values
-
-        //Insertar el evento en la hoja de Google:
-        await insertRow(sheetId, 'Actividades', nextEmptyRow, dataToInsert)
-        res.send({
-            message: 'Actividad creada y subida al calendario correctamente',
-            response,
-        })
-    } catch (error) {
-        next(error)
+    if (error) {
+      error.message = error.details[0].message
+      generateError(error.message)
     }
+
+    // Subir la foto a cloudinary y guardar el url
+    let image = 'sin imagen'
+
+    if (req.file) {
+      const response = await cloudinaryUpload(req.file, 'calendarEvents')
+      image = response || 'sin imagen'
+    }
+
+    //Añadir el evento al calendario:
+    const response = await addEvent({
+      ...req.body,
+      extendedProperties: {
+        ...req.body.extendedProperties,
+        private: {
+          ...req.body.extendedProperties.private,
+          image: image,
+        },
+      },
+    })
+    if (!response.id) {
+      generateError('Error al crear el evento en Google Calendar')
+    }
+    //Formato de datos para insertar en la hoja de Google:
+    const dataToInsert = [
+      [
+        response.id,
+        summary,
+        description,
+        formattedStartDate,
+        formattedEndtDate,
+        location,
+        accessDataSheet,
+        'confirmed',
+        image,
+        await translateTextWithPageBreak(description, 'es-gl'),
+        await translateTextWithPageBreak(summary, 'es-gl'),
+      ],
+    ]
+
+    //Obtener la siguiente fila vacía:
+    const values = await allSheetData(sheetId, 'Actividades')
+    const { nextEmptyRow } = values
+
+    //Insertar el evento en la hoja de Google:
+    await insertRow(sheetId, 'Actividades', nextEmptyRow, dataToInsert)
+    res.send({
+      message: 'Actividad creada y subida al calendario correctamente',
+      response,
+      translatedFields: {
+        summary: { es: response.summary, gl: dataToInsert[0][10] },
+        description: { es: response.description, gl: dataToInsert[0][9] },
+      },
+    })
+  } catch (error) {
+    next(error)
+  }
 }
 export default createActivity
 

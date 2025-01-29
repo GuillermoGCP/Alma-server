@@ -1,4 +1,4 @@
-import translateText from './translateText.js'
+import { translateText } from './index.js'
 
 const translateTextWithPageBreak = async (text) => {
   let fixedText = ''

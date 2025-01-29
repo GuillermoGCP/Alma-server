@@ -1,5 +1,5 @@
 import executeCommand from './executeCommand.js'
-import { generateError } from './index.js'
+import { generateError, correctTranslation } from './index.js'
 
 async function translateText(text, langPair) {
   let command
@@ -15,7 +15,7 @@ async function translateText(text, langPair) {
 
     const result = await executeCommand(command)
 
-    return result
+    return correctTranslation(result)
   } catch (error) {
     generateError(`Error durante la traducción: ${error.message}`)
   }
