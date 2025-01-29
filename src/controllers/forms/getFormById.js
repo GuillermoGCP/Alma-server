@@ -1,8 +1,6 @@
 import { getRowsData } from '../../googleapis/methods/index.js'
 import groupDataById from '../../utils/groupDataById.js'
-import { unnormalizeFieldName } from '../../utils/index.js'
-import FormModel from '../../Database/models/FormModel.js'
-import { formObjectCreator } from '../../helpers/formObject.js'
+import FormModel from '../../Database/models/FormModel2.js'
 
 const getFormById = async (req, res, next) => {
   try {
@@ -24,29 +22,21 @@ const getFormById = async (req, res, next) => {
 
     //Formateo los datos para que coincidan con la estructura esperada en el front:
     const dataToSend = {
-      formName: unnormalizeFieldName(Object.entries(form)[0][1].formName),
-      formId: formId,
+      formName: form[formId].formName,
+      formId,
       publishNumber: jsonNumber,
-      fields: Object.entries(form)[0][1].fields.map((field) => {
-        return {
-          label: unnormalizeFieldName(field.label),
-          type: field.type,
-        }
-      }),
+      fields: form[formId].fields,
     }
-
-    //Traduzco los campos del formulario:
-    const formTranslated = await formObjectCreator(dataToSend)
 
     //Si se publica, se guarda en Mongo:
     if (publish === 'publish') {
-      formToSave = new FormModel(formTranslated)
+      formToSave = new FormModel(dataToSend)
       await formToSave.save()
     }
 
     res.send({
       message: `formulario con id: ${formId} obtenido`,
-      form: formTranslated,
+      form: dataToSend,
     })
   } catch (error) {
     console.log(error)

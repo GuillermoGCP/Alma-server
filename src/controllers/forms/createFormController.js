@@ -5,11 +5,7 @@ import {
   allSheetData,
   updateRow,
 } from '../../googleapis/methods/index.js'
-import {
-  getColumnLetter,
-  normalizeFieldName,
-  translateText,
-} from '../../utils/index.js'
+import { getColumnLetter, normalizeFieldName } from '../../utils/index.js'
 
 const createFormController = async (req, res, next) => {
   try {
@@ -31,25 +27,28 @@ const createFormController = async (req, res, next) => {
     //Guardo los campos en la hoja de campos:
     const values = await allSheetData(spreadsheetId, 'Formularios')
     const { nextEmptyRow } = values
-    saveFormData(spreadsheetId, formData, nextEmptyRow, 'Formularios')
+    const rows = await saveFormData(
+      spreadsheetId,
+      formData,
+      nextEmptyRow,
+      'Formularios'
+    )
 
     //Edito la estructura de datos para que coincida con la esperada en el front y añado las traducciones:
     dataToSend[formData.formId] = {
       formName: {
         es: formData.formName,
-        gl: await translateText(formData.formName, 'es-gl'),
+        gl: rows[0][4],
       },
-      fields: await Promise.all(
-        formData.fields.map(async (obj) => {
-          return {
-            ...obj,
-            label: {
-              es: obj.label,
-              gl: await translateText(obj.label, 'es-gl'),
-            },
-          }
-        })
-      ),
+      fields: rows.map((arr) => {
+        return {
+          type: arr[3],
+          label: {
+            es: arr[2],
+            gl: arr[5],
+          },
+        }
+      }),
     }
 
     //Lógica para crear una hoja de respuestas y obtener el id:
@@ -89,7 +88,7 @@ const createFormController = async (req, res, next) => {
     //Si la hoja de respuesta ya existe, actualizo los campos:
     const resultsSheet = await allSheetData(
       spreadsheetIdForms,
-      formData.formName
+      normalizeFieldName(formData.formName)
     )
     const { headers } = resultsSheet
 
@@ -109,7 +108,7 @@ const createFormController = async (req, res, next) => {
 
     const dataToUpdateRow = {
       spreadsheetId: spreadsheetIdForms,
-      range: `${formData.formName}!A1:${getColumnLetter(
+      range: `${normalizeFieldName(formData.formName)}!A1:${getColumnLetter(
         updatedHeaders.length
       )}1`,
       valueInputOption: 'RAW',

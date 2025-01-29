@@ -1,5 +1,4 @@
 import { allSheetData } from '../../googleapis/methods/index.js'
-import { allFormsObjectCreator } from '../../helpers/formObject.js'
 import { groupDataById } from '../../utils/index.js'
 
 const getAllForms = async (req, res, next) => {
@@ -13,12 +12,9 @@ const getAllForms = async (req, res, next) => {
     // Agrupo los formularios por id:
     const groupedData = groupDataById(rows)
 
-    // Traduzco los nombres y los campos de los formularios:
-    const translatedData = await allFormsObjectCreator(groupedData)
-
     res.send({
       message: 'formularios obtenidos',
-      forms: translatedData,
+      forms: groupedData,
     })
   } catch (error) {
     next(error)
